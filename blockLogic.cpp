@@ -67,9 +67,9 @@ void Widget::CreateBlock(Block_info &head_block)    //对next_block的引用传�
 
     //设置初始人物块基本信息（先实现正常下落）
     head_block.img = QPixmap(ImgPath);
-    head_block.y = fallingHeight;      //pos_y = 0 即头朝下第一行（需要预留一些第零行的下落距离）
+    head_block.y = 2*BLOCK_SIZE + fallingHeight;   //改为页边栏就开始下坠
     head_block.bp.pos_x = rPos_x;   //AREA_COL/2
-    head_block.bp.pos_y = 0;
+    head_block.bp.pos_y = qFloor(head_block.y / BLOCK_SIZE * 1.0);
     head_block.is_head = 1; //头部标识
     head_block.dir = rDir;
 }
@@ -140,8 +140,8 @@ bool Widget::IsCollide(int x, int pos_y, Direction key_dir, int y)  //给定的�
         break;
     case DOWN:
         // pos_y += 1;
-        y += fallingHeight;  //下落像素距离
-        tpos_y = qFloor(y / (BLOCK_SIZE * 1.0)); //当前下落层格数（下标零起点故下取整）
+        // y + fallingHeight;  //下落像素距离
+        tpos_y = qFloor((y + fallingHeight) / (BLOCK_SIZE * 1.0)); //*当前*占据的下落层格数（下标零起点故下取整）
         break;
     case LEFT:
         x -= 1;
