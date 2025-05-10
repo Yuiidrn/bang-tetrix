@@ -140,8 +140,8 @@ bool Widget::IsCollide(int x, int pos_y, Direction key_dir, int y)  //给定的�
         break;
     case DOWN:
         // pos_y += 1;
-        y += fallingHeight;
-        tpos_y = qCeil(y / (BLOCK_SIZE * 1.0));
+        y += fallingHeight;  //下落像素距离
+        tpos_y = qFloor(y / (BLOCK_SIZE * 1.0)); //当前下落层格数（下标零起点故下取整）
         break;
     case LEFT:
         x -= 1;

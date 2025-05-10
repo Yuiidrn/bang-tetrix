@@ -13,10 +13,8 @@ void Widget::BlockTranslate(Direction key_dir)
 {
     //整体逻辑是以判头块为主！头块为实体而腿块为虚体仅作碰撞判断用，即确定好头块位置前就预留有放腿块的空间
     block_point h_bck = cur_block.bp, l_bck = h_bck;
-    l_bck.pos_x += dj[cur_block.dir]; l_bck.pos_y += di[cur_block.dir];
-
-    //就是上取整！
-    int tpos_y = qCeil(cur_block.y / BLOCK_SIZE * 1.0);
+    l_bck.pos_x += dj[cur_block.dir]; l_bck.pos_y += di[cur_block.dir]; //pos —— 下落层格数
+    int tpos_y = qFloor(cur_block.y / BLOCK_SIZE * 1.0);
 
     int match_count = 0;
 
