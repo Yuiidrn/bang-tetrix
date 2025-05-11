@@ -22,18 +22,20 @@ int Widget::BlockCheck()
     memset(vis, 0, sizeof(vis));
     for( int i = AREA_ROW - 1; i >= 0; i-- ) { //从后往前，从左往右
         for( int j = 0; j < AREA_COL; j++ ) {
-            if( game_area[i][j].is_stable && !vis[i][j]) { //&& game_area[i][j].belong != Item
+            if( !vis[i][j] && game_area[i][j].is_stable && game_area[i][j].belong != Item) { //必须非物块进入BFS
+                QVector<QPair<int, int>> Items;  //临时存储万能块位置信息，用于还原单次BFS后的所有万能块的vis情况（不同于乐队块的独特性, 万能块需维护其通用性
                 QQueue<Block_info> q;  //BFS搜索队列
-                int cur_charNum = 0;    //用来记录目前匹对人数
+                int cur_charNum = 0;   //用来记录目前匹对人数
 
                 v.clear();
 
                 Block_info tBlock = game_area[i][j];
                 Band_name cur_blng = tBlock.belong;
+
                 cur_bandMP->setSource(tBlock.bandSoundPath); //提前加载
 
                 vis[i][j] = 1;  //byd BFS真太久妹写了！先记录再push啊！这样多元素同时刻push进队列才不会重复啊！！
-                q.push_back(game_area[i][j]);
+                q.push_back(tBlock);
                 //BFS开始
                 while(q.size()) {
                     block_point tp = q.front().bp;
@@ -48,14 +50,17 @@ int Widget::BlockCheck()
                         if(ti < 0 || ti > AREA_ROW - 1 || tj < 0 || tj > AREA_COL - 1 )
                             continue;
 
-                        if( !vis[ti][tj] && game_area[ti][tj].is_stable && (game_area[ti][tj].belong == cur_blng || game_area[ti][tj].belong == Item) ){
+                        if( !vis[ti][tj] && game_area[ti][tj].is_stable && (game_area[ti][tj].belong == cur_blng || game_area[ti][tj].belong == Item) ){                            
                             vis[ti][tj] = 1;
                             q.push_back(game_area[ti][tj]);
+                            if(game_area[ti][tj].belong == Item)
+                                Items.push_back({ti, tj});
                         }
                     }
                 }
-                //必须保证onPlayingChanged调用后清除匹配块，避免二次进入
-                if (cur_charNum >= 2 * CHAR_NUM) {
+                //保证所有连通万能块在同一次BFS进入待消列中
+
+                if (cur_charNum >= 2 * CHAR_NUM) { //存在匹配连通块
                     match_count ++ ;
                     //剩余乐队及成员集合维护操作
                     charRest[(int)cur_blng] = ini_set;   //乐队成员全部回入
@@ -64,8 +69,11 @@ int Widget::BlockCheck()
                     gameTimer->stop();
 
                     this->installEventFilter(this);     //窗口对自己安装一个事件过滤器，屏蔽对界面的所有输入 实现暂停
-                    Sleep(m_MPdur + 100);
-                    onPlayingChanged();     //只有QMediaPlayer能获取时长
+                    Sleep(m_MPdur + 100);   //只有QMediaPlayer能获取时长
+                    onPlayingChanged();     //必须保证onPlayingChanged调用后清除匹配块，避免二次进入
+                } else { //还原万能块vis信息
+                    for(auto &p : Items)
+                        vis[p.first][p.second] = 0;
                 }
             }
         }
@@ -86,32 +94,30 @@ void Widget::onPlayingChanged(){
     //场景预刷新操作
     memset(vis, 0, sizeof(vis));                         //vis重置
     for(Block_info &tb : v)
-        game_area[tb.bp.pos_y][tb.bp.pos_x] = ini_block; //清空匹配连通块；并做下移处理
+        game_area[tb.bp.pos_y][tb.bp.pos_x] = ini_block; //清空匹配连通块
+    cur_block = ini_block; //包括cur_block
+
+    //！！时序上必须要先清空腿部虚块！！
     for(int ii = AREA_ROW-1; ii >= 0; ii-- )
         for(int jj = 0; jj < AREA_COL; jj++ )
-            //！！时序上必须要先清空腿部虚块！！
             if(game_area[ii][jj].is_stable && !game_area[ii][jj].is_head)
                 game_area[ii][jj] = ini_block;
 
-    //再作整体下移（重力机制，应有别于活动块的下落逻辑，单独编写）
-    for(int ii = AREA_ROW-1; ii >= 0; ii-- ) {
+    //再作整体下移（即重力机制，差不多就是活动块的一键落地逻辑）
+    for(int ii = AREA_ROW-1; ii >= 0; ii-- ) { //自下而上刷新
         for(int jj = 0; jj < AREA_COL; jj++ ) {
             if(game_area[ii][jj].is_stable && game_area[ii][jj].is_head) { //对头部人物快直接作空格下移操作
-                Block_info rec_block = Block_info();        //先创建实例
-                rec_block = game_area[ii][jj];              //再拷贝
+                Block_info rec_block = Block_info();        //先创建并拷贝实例record&cur_block
+                rec_block = game_area[ii][jj];
                 block_point h_bck = rec_block.bp;
-
-                while(h_bck.pos_y < AREA_ROW-1 && !IsCollide(h_bck.pos_x, h_bck.pos_y, DOWN, rec_block.y) )
+                game_area[ii][jj] = ini_block;      //后消块
+                while(!IsCollide(rec_block, DOWN) )
                 {
-                    //恢复方块上场景,为了清除移动过程中的方块残留
-                    game_area[h_bck.pos_y][h_bck.pos_x] = ini_block;
-                    //没有碰撞则下落一格
-                    rec_block.bp.pos_y += 1;
-                    h_bck.pos_y += 1;
-                    //方块下降一格，拷贝到场景,注意左右边界
-                    game_area[h_bck.pos_y][h_bck.pos_x] = rec_block;
+                    rec_block.y += fallingHeight;
+                    rec_block.bp.pos_y = qFloor(rec_block.y / BLOCK_SIZE * 1.0);
+                    h_bck = rec_block.bp;
                 }                
-                // ConvertStable(h_bck.pos_x, h_bck.pos_y);
+                ConvertStable(h_bck.pos_x, h_bck.pos_y, rec_block);
             }
         }
     }

@@ -13,8 +13,7 @@ Widget::Widget(QWidget *parent)
     scaleUi = static_cast<qreal>(availableGeometry.width()) / defaultWidth; //获取比例
     this->resize(availableGeometry.width(), availableGeometry.height());
 
-    int offset = 3; //单个方块单元的边长偏差
-    BLOCK_SIZE = availableGeometry.height() / AREA_ROW - offset;
+    BLOCK_SIZE = (availableGeometry.height() - upOffset) / AREA_ROW ; //分割窗口为指定行数
     lMARGIN *= scaleUi;
     uMARGIN *= scaleUi;
     this->setWindowTitle("BanG_Tetrix!");
@@ -66,8 +65,8 @@ void Widget::InitGame()
             game_area[i][j] = Block_info(); //默认构造函数作初始化
 
     //剩余乐队及成员管理
-    for(int i = 0; i < BAND_NUM; i++)
-        bandRest.insert(i); // bandRest = {0,1,2,3,4,5,6,7,8,9};
+    for(int i = 0; i < SET_NUM/*BAND_NUM*/; i++)
+        bandRest.insert(i); // bandRest = {0,1,2,3,4,5,6,7,8};
 
     for(int j = 0; j < CHAR_NUM; j++)
         ini_set.insert(j); // ini_set = {0, 1, 2, 3, 4, 5};
@@ -194,30 +193,34 @@ void Widget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数！�
     painter.drawText(QRect(AREA_COL*BLOCK_SIZE + 1.7*lMARGIN-uOff, 4.16*uMARGIN, 100, 100),Qt::AlignCenter,QString::number(MaxCombo));
 
     /* 绘制当前块(要实现平滑下落必须得单拎出来绘制：cur_block) */
+    // 注意**消块处理过程**中cur_block置空不绘制出来！
     painter.save(); //通过移动转变坐标系来绘制（注意复原）
     tImg = cur_block.img;
     scale = static_cast<qreal>(tImg.width()) / tImg.height();
     // 根据缩放比例计算图片块宽度
     int Half_scalingImgWidth = cur_block.belong != Item ? qRound(scale * (BLOCK_SIZE*2) )/2 : qRound(scale*(BLOCK_SIZE))/2;
-    painter.translate(lMARGIN + (cur_block.bp.pos_x+0.5)*(BLOCK_SIZE), cur_block.y); //画布原点默认先移动至上边界中心点(**当前块的y坐标改为实时坐标=>下落幅度即可以像素来衡量)
-    // 注意额外的绕头旋转原点偏移处理
+    // 绘图逻辑也是重要的一环啊，不是只盯着碰撞逻辑死磕的
+    painter.translate(lMARGIN + (cur_block.bp.pos_x+0.5)*(BLOCK_SIZE), cur_block.y); //画布原点默认先平移至当前质点(一定设置为*起始姿态*时的头顶(游戏里设置先倒立而已))中心点位置(**所以当前块的y为就应该是倒立时头顶的实时坐标=>下落幅度即可以像素来衡量)
+    // 注意额外的绕头旋转（左右侧）原点偏移处理
     switch (cur_block.dir) {  //再根据缩放后半图宽调整printPoint（只以屏幕左上角为准，提前确定好旋转点（需要纸面推算））
+    case 0:
+        painter.translate(-Half_scalingImgWidth, -BLOCK_SIZE);    //腿朝下，头顶位置正转回上侧（以方格中心为准，下同），并左拉角色图距离（1/2头发宽）
+        break;
     case 1:
-        painter.translate(BLOCK_SIZE/2, BLOCK_SIZE/2 - Half_scalingImgWidth);  //腿朝左，原点平移至右中心点后上拉
+        painter.translate(BLOCK_SIZE/2, -BLOCK_SIZE/2 - Half_scalingImgWidth);  //腿朝左，头顶位置侧转至右侧，上拉角色图距离（1/2头发宽）
         break;
     case 2:
-        painter.translate(0 + Half_scalingImgWidth, BLOCK_SIZE);     //腿朝上，原点平移至下中心点后右拉
+        painter.translate(Half_scalingImgWidth, 0);     //腿朝上，头顶位置不变，原点右拉角色图距离（1/2头发宽）即可
         break;
     case 3:
-        painter.translate(-BLOCK_SIZE/2, BLOCK_SIZE/2 + Half_scalingImgWidth);   //腿朝右，原点平移至左中心点后下拉
+        painter.translate(-BLOCK_SIZE/2, -BLOCK_SIZE/2 + Half_scalingImgWidth);  //腿朝右，头顶位置侧转至左侧，下拉角色图距离（1/2头发宽）
         break;
     default:
-        painter.translate(-Half_scalingImgWidth, 0);    //腿朝下，原点左拉
         break;
     }
-    painter.rotate(90*cur_block.dir);     //旋转后再次根据具体图宽调整printPoint
+    painter.rotate(90*cur_block.dir); //旋转后调整printPoint
     painter.drawPixmap(QRect(0, 0, Half_scalingImgWidth*2, cur_block.belong != Item ? BLOCK_SIZE*2 : BLOCK_SIZE), tImg);
-    painter.restore(); //复原
+    painter.restore(); //复原至(0, 0)
 
     /* 绘制稳定块 */
     for(int i = 0; i < AREA_ROW; i++)
@@ -232,20 +235,22 @@ void Widget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数！�
                 scale = static_cast<qreal>(tImg.width()) / tImg.height();
                 // 根据缩放比例计算图片块宽度
                 int Half_scalingImgWidth = game_area[i][j].belong != Item ? qRound(scale * (BLOCK_SIZE*2) )/2 : qRound(scale*(BLOCK_SIZE))/2;
-                painter.translate(lMARGIN + (j+0.5)*(BLOCK_SIZE), i*BLOCK_SIZE); //画布原点默认先移动至上边界中心点(**稳定块的y坐标即用数组坐标)
+                painter.translate(lMARGIN + (j+0.5)*(BLOCK_SIZE), game_area[i][j].y); //画布原点默认先移动至上边界中心点(**稳定块的y坐标即用数组坐标)
                 // 注意额外的绕头旋转原点偏移处理
                 switch (game_area[i][j].dir) {  //再根据缩放后半图宽调整printPoint（只以屏幕左上角为准，提前确定好旋转点（需要纸面推算））
+                case 0:
+                    painter.translate(-Half_scalingImgWidth, -BLOCK_SIZE);    //腿朝下，头顶位置正转回上侧（以方格中心为准，下同），并左拉角色图距离（1/2头发宽）
+                    break;
                 case 1:
-                    painter.translate(BLOCK_SIZE/2, BLOCK_SIZE/2 - Half_scalingImgWidth);  //腿朝左，原点平移至右中心点后上拉
+                    painter.translate(BLOCK_SIZE/2, -BLOCK_SIZE/2 - Half_scalingImgWidth);  //腿朝左，头顶位置侧转至右侧，上拉角色图距离（1/2头发宽）
                     break;
                 case 2:
-                    painter.translate(0 + Half_scalingImgWidth, BLOCK_SIZE);     //腿朝上，原点平移至下中心点后右拉
+                    painter.translate(Half_scalingImgWidth, 0);     //腿朝上，头顶位置不变，原点右拉角色图距离（1/2头发宽）即可
                     break;
                 case 3:
-                    painter.translate(-BLOCK_SIZE/2, BLOCK_SIZE/2 + Half_scalingImgWidth);   //腿朝右，原点平移至左中心点后下拉
+                    painter.translate(-BLOCK_SIZE/2, -BLOCK_SIZE/2 + Half_scalingImgWidth);  //腿朝右，头顶位置侧转至左侧，下拉角色图距离（1/2头发宽）
                     break;
                 default:
-                    painter.translate(-Half_scalingImgWidth, 0);    //腿朝下，原点左拉
                     break;
                 }
                 painter.rotate(90*game_area[i][j].dir);     //旋转后再次根据具体图宽调整printPoint
