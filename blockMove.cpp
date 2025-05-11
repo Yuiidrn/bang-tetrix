@@ -39,7 +39,7 @@ void Widget::BlockTranslate(Direction key_dir)
             break;
         }
         cur_block.y += fallingHeight;
-        cur_block.bp.pos_y = qFloor(cur_block.y / BLOCK_SIZE * 1.0);   //注意实体修改！
+        cur_block.bp.pos_y = qFloor(cur_block.y / BLOCK_SIZE * 1.0); //粗赋值*当前块转活动块*所要占据的下落层格数（下标零起点故下取整），精判过程在collision中
         break;
     case LEFT:
         //到左边界或者碰撞不再往左
@@ -61,7 +61,7 @@ void Widget::BlockTranslate(Direction key_dir)
         {
             //new：根据实时y坐标增加，并确定当前pos_y以用于碰撞检测
             cur_block.y += fallingHeight;
-            cur_block.bp.pos_y = qFloor(cur_block.y / BLOCK_SIZE * 1.0);  //注意实体修改！
+            cur_block.bp.pos_y = qFloor(cur_block.y / BLOCK_SIZE * 1.0);
         }
         ConvertStable(cur_block.bp.pos_x, cur_block.bp.pos_y, cur_block);
         landEffect->play();

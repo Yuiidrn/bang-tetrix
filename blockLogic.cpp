@@ -132,10 +132,10 @@ bool Widget::IsCollide(Block_info check_block, Direction key_dir)  //给定为�
 {
     /*试错法！！！碰撞检测很值得学习的思路！*/
     //用临时方向做判断
-    int x = check_block.bp.pos_x, pos_y = check_block.bp.pos_y, y = check_block.y;
+    int x = check_block.bp.pos_x, pos_y = check_block.bp.pos_y, ty = check_block.y;
     bool is_item = check_block.belong == Item ? true : false;
     int t_dir = check_block.dir;
-    int tpos_y = pos_y, midPos_y = pos_y ; // 精确嵌入判断
+    int tpos_y; //pos下取整意味着1.1, 1.2这些刚露头的情况仍然视作已下落至第二行格末端（行下标1），实际上嵌入格的左右是存在碰撞的，需要精判完善
     //先尝试按照某方向走一格
     switch(key_dir)
     {
@@ -143,9 +143,8 @@ bool Widget::IsCollide(Block_info check_block, Direction key_dir)  //给定为�
         t_dir = (t_dir + 1) % 4;
         break;
     case DOWN:
-        // pos_y += 1;
-        // y + fallingHeight;  //下落像素距离
-        tpos_y = qFloor((y + fallingHeight) / (BLOCK_SIZE * 1.0)); //*当前*占据的下落层格数（下标零起点故下取整）
+        ty += fallingHeight;  //下落像素距离
+        pos_y = qFloor(ty / BLOCK_SIZE * 1.0);
         break;
     case LEFT:
         x -= 1;
@@ -157,37 +156,28 @@ bool Widget::IsCollide(Block_info check_block, Direction key_dir)  //给定为�
     default:
         break;
     }
-
-    if(abs(y - tpos_y * BLOCK_SIZE * 1.0) <= fallingHeight * 2) //嵌入精判
-        midPos_y = tpos_y;
+    //pos_y + 1后去乘块高 才代表当前行格的底端下落高，也即零行下标起点行格像素高特性
+    if(abs((pos_y + 1) * BLOCK_SIZE - ty) <= fallingHeight * 2) //嵌入精判(上下放宽n个下落帧
+        tpos_y = pos_y;  //差距仅n个下落帧
     else
-        midPos_y = (tpos_y - 1) < 0 ? 0 : (tpos_y - 1);
+        tpos_y = (pos_y - 1) < 0 ? 0 : (pos_y - 1); //否则tpos_y仍保持上一行的碰撞体积
 
     // int BOTTOM = BLOCK_SIZE * AREA_ROW + 2 * fallingHeight;
     if( !is_item ){
         //额外获取腿部块方位 直接再补加一层di[dir]和dj[dir]推出（腿部延申块）
-        int leg_x = x + dj[t_dir], leg_pos_y = tpos_y + di[t_dir], midLeg_pos_y = leg_pos_y; // leg_y = y + 2 * di[t_dir] * BLOCK_SIZE; //注意×2！头到脚底板是两个块宽！
-        if(t_dir == 1 || t_dir == 3)
-            midLeg_pos_y += di[t_dir];
-
-        // if( t_dir == 2 ) { //如果为方向↑时(头在下腿在上)只需判头块的下落！！否则消块下落时自身腿块被自身头块阻碍而悬空！！
-        //     if( (game_area[pos_y][x].is_stable) ||
-        //         (x < 0 || leg_x < 0) || (x > AREA_COL - 1 || leg_x > AREA_COL - 1) ||
-        //         (y > BOTTOM || leg_y > BOTTOM) ) //注意加下边界！
-        //         return true; //存在碰撞
-        // }
+        int leg_x = x + dj[t_dir], leg_pos_y = pos_y + di[t_dir], tLeg_pos_y = tpos_y + di[t_dir]; // leg_y = y + 2 * di[t_dir] * BLOCK_SIZE; //注意×2！头到脚底板是两个块宽！
 
         //存在碰撞
-        if( (game_area[tpos_y][x].is_stable || game_area[leg_pos_y][leg_x].is_stable) ||
-            (game_area[midPos_y][x].is_stable || game_area[midLeg_pos_y][leg_x].is_stable) || //嵌入精判
+        if( (game_area[tpos_y][x].is_stable || game_area[tLeg_pos_y][leg_x].is_stable) ||
+            (game_area[pos_y][x].is_stable || game_area[leg_pos_y][leg_x].is_stable) ||
             (x < 0 || leg_x < 0) || (x > AREA_COL - 1 || leg_x > AREA_COL - 1) ||
-            (tpos_y > AREA_ROW - 1 || leg_pos_y > AREA_ROW - 1) ) //注意加下边界！
+            (pos_y > AREA_ROW - 1 || leg_pos_y > AREA_ROW - 1) ) //注意加下边界！
             return true;
 
         return false;
     }
     else {
-        if( game_area[tpos_y][x].is_stable || x < 0 || x > AREA_COL - 1 || tpos_y > AREA_ROW - 1 )
+        if( game_area[pos_y][x].is_stable || x < 0 || x > AREA_COL - 1 || pos_y > AREA_ROW - 1 )
             return true; //物体块1*1碰撞
         return false;
     }
