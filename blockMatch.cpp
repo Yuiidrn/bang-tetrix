@@ -64,8 +64,8 @@ int Widget::BlockCheck()
                     gameTimer->stop();
 
                     this->installEventFilter(this);     //窗口对自己安装一个事件过滤器，屏蔽对界面的所有输入 实现暂停
-                    Sleep(m_MPdur + 100);
-                    onPlayingChanged();     //只有QMediaPlayer能获取时长
+                    Sleep(m_MPdur + 100);   //只有QMediaPlayer能获取时长
+                    onPlayingChanged();
                 }
             }
         }
@@ -93,25 +93,21 @@ void Widget::onPlayingChanged(){
             if(game_area[ii][jj].is_stable && !game_area[ii][jj].is_head)
                 game_area[ii][jj] = ini_block;
 
-    //再作整体下移（重力机制，应有别于活动块的下落逻辑，单独编写）
-    for(int ii = AREA_ROW-1; ii >= 0; ii-- ) {
+    //再作整体下移（即重力机制，差不多就是活动块的一键落地逻辑）
+    for(int ii = AREA_ROW-1; ii >= 0; ii-- ) { //自下而上刷新
         for(int jj = 0; jj < AREA_COL; jj++ ) {
             if(game_area[ii][jj].is_stable && game_area[ii][jj].is_head) { //对头部人物快直接作空格下移操作
-                Block_info rec_block = Block_info();        //先创建实例
-                rec_block = game_area[ii][jj];              //再拷贝
+                Block_info rec_block = Block_info();        //先创建并拷贝实例record&cur_block
+                rec_block = game_area[ii][jj];
                 block_point h_bck = rec_block.bp;
-
-                while(h_bck.pos_y < AREA_ROW-1 && !IsCollide(h_bck.pos_x, h_bck.pos_y, DOWN, rec_block.y) )
+                game_area[ii][jj] = ini_block;      //后消块
+                while(!IsCollide(h_bck.pos_x, h_bck.pos_y, DOWN, rec_block.y, rec_block) )
                 {
-                    //恢复方块上场景,为了清除移动过程中的方块残留
-                    game_area[h_bck.pos_y][h_bck.pos_x] = ini_block;
-                    //没有碰撞则下落一格
-                    rec_block.bp.pos_y += 1;
-                    h_bck.pos_y += 1;
-                    //方块下降一格，拷贝到场景,注意左右边界
-                    game_area[h_bck.pos_y][h_bck.pos_x] = rec_block;
+                    rec_block.y += fallingHeight;
+                    rec_block.bp.pos_y = qFloor(rec_block.y / BLOCK_SIZE * 1.0);
+                    h_bck = rec_block.bp;
                 }                
-                // ConvertStable(h_bck.pos_x, h_bck.pos_y);
+                ConvertStable(h_bck.pos_x, h_bck.pos_y, rec_block);
             }
         }
     }

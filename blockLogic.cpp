@@ -14,7 +14,7 @@ void Widget::CreateBlock(Block_info &head_block)    //对next_block的引用传�
     int is_item = -1;
     if(sum > 0)       //避免模零异常，下同
         is_item = rand() % sum;
-    const double prob = 1/3.0; //基于剩余成员越少，万能块越容易刷出的动态概率(整型数判断)
+    const double prob = 1/5.0; //基于剩余成员越少，万能块越容易刷出的动态概率(整型数判断)
 
     if(is_item > sum *(1-prob) || is_item < 0){ //无剩余乐队则必是物块，同时避免rof模零异常
         int numItems = 3;
@@ -101,15 +101,15 @@ void Widget::ResetBlock()
 }
 
 //转化为稳定块(同时判断游戏是否结束)
-void Widget::ConvertStable(int x, int y)
+void Widget::ConvertStable(int x, int pos_y, Block_info &cpy_Block)
 {
     //头部
-    game_area[y][x] = cur_block;
-    game_area[y][x].is_stable = 1;
+    block_cpy(game_area[pos_y][x], cpy_Block);
+    game_area[pos_y][x].is_stable = 1;
 
-    if(game_area[y][x].belong != Item) {
+    if(game_area[pos_y][x].belong != Item) {
         //腿部
-        int leg_i = y + di[game_area[y][x].dir], leg_j = x + dj[game_area[y][x].dir];
+        int leg_i = pos_y + di[game_area[pos_y][x].dir], leg_j = x + dj[game_area[pos_y][x].dir];
         // 优先判断游戏是否结束，避免腿块下标i为-1而造成访问越界，同时改逻辑为窗口外第“0”行出现腿块才结束
         //（无非两种情况：头出或腿出，而开始生成的话头块以固定为第一行，结合现实不太可能会有头出的情况，因此需格外排除腿出的情况）
 
@@ -120,7 +120,7 @@ void Widget::ConvertStable(int x, int y)
         }
         else
         {
-            block_cpy(game_area[leg_i][leg_j], game_area[y][x]); //拷贝头部块信息
+            block_cpy(game_area[leg_i][leg_j], game_area[pos_y][x]); //拷贝头部块信息
             //！！注意个别值的更新！！
             game_area[leg_i][leg_j].bp = {leg_j, leg_i}; //坐标位置更新！
             game_area[leg_i][leg_j].is_head = 0;         //撤销腿部头部块识别！
@@ -128,12 +128,12 @@ void Widget::ConvertStable(int x, int y)
     }
 }
 //碰撞逻辑
-bool Widget::IsCollide(int x, int pos_y, Direction key_dir, int y)  //给定的是头部坐标！！！
+bool Widget::IsCollide(int x, int pos_y, Direction key_dir, int y, Block_info check_block)  //给定为头块坐标
 {
     /*试错法！！！碰撞检测很值得学习的思路！*/
     //用临时方向做判断
-    bool is_item = cur_block.belong == Item ? true : false;
-    int t_dir = cur_block.dir;
+    bool is_item = check_block.belong == Item ? true : false;
+    int t_dir = check_block.dir;
     int tpos_y = pos_y, midPos_y = pos_y ; // 精确嵌入判断
     //先尝试按照某方向走一格
     switch(key_dir)
