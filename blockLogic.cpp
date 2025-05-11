@@ -128,10 +128,11 @@ void Widget::ConvertStable(int x, int pos_y, Block_info &cpy_Block)
     }
 }
 //碰撞逻辑
-bool Widget::IsCollide(int x, int pos_y, Direction key_dir, int y, Block_info check_block)  //给定为头块坐标
+bool Widget::IsCollide(Block_info check_block, Direction key_dir)  //给定为头块坐标
 {
     /*试错法！！！碰撞检测很值得学习的思路！*/
     //用临时方向做判断
+    int x = check_block.bp.pos_x, pos_y = check_block.bp.pos_y, y = check_block.y;
     bool is_item = check_block.belong == Item ? true : false;
     int t_dir = check_block.dir;
     int tpos_y = pos_y, midPos_y = pos_y ; // 精确嵌入判断

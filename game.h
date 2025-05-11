@@ -24,6 +24,7 @@
 #include <QLabel>
 #include <QtAlgorithms>
 #include <math.h>
+#include <QPair>
 using namespace std;
 
 QT_BEGIN_NAMESPACE
@@ -52,7 +53,7 @@ public:
     void BlockRotate(Block_info &head_block);    //人物块旋转
     void CreateBlock(Block_info &head_block);    //产生人物块（千万注意非数组定义时是引用传值！！）
     void ConvertStable(int x, int pos_y, Block_info &cpy_block);    //转换为稳定方块
-    bool IsCollide(int x, int pos_y, Direction dir, int y, Block_info check_block); //判断是否会碰撞
+    bool IsCollide(Block_info check_block, Direction dir); //判断是否会碰撞
     int BlockCheck();           //匹配相消检查，并作整体下移
 
     /*其他*/

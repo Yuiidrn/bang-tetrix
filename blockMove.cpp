@@ -19,7 +19,7 @@ void Widget::BlockTranslate(Direction key_dir)
 
     switch (key_dir) {  //只有下落运动中(DOWN & SPACE)才设置block_check
     case UP:
-        if(IsCollide(h_bck.pos_x, h_bck.pos_y, UP, cur_block.y, cur_block))
+        if(IsCollide(cur_block, UP))
             break;
         //顺时针旋转90度
         BlockRotate(cur_block);
@@ -28,7 +28,7 @@ void Widget::BlockTranslate(Direction key_dir)
         //人物块(包括头或腿)到达边界则不再移动（**触底判定要更改为根据实时坐标判定，否则会被提前吸附）
         //new：根据实时y坐标增加，并确定当前pos_y以用于碰撞检测
         //碰撞检测，只计算上下左右边界，先尝试走一格，如果碰撞则稳定方块后跳出
-        if(IsCollide(h_bck.pos_x, h_bck.pos_y, DOWN, cur_block.y, cur_block))
+        if(IsCollide(cur_block, DOWN))
         {
             //只有最终不能下落才转成稳定方块(腿块和头块要统一！)
             ConvertStable(h_bck.pos_x, h_bck.pos_y, cur_block);
@@ -43,21 +43,21 @@ void Widget::BlockTranslate(Direction key_dir)
         break;
     case LEFT:
         //到左边界或者碰撞不再往左
-        if(l_bck.pos_x == 0 || IsCollide(h_bck.pos_x, h_bck.pos_y, LEFT, cur_block.y, cur_block) )
+        if(l_bck.pos_x == 0 || IsCollide(cur_block, LEFT) )
             break;
 
         cur_block.bp.pos_x -= 1;
         break;
     case RIGHT:
         //到左边界或者碰撞不再往左
-        if(l_bck.pos_x == AREA_COL - 1 || IsCollide(h_bck.pos_x, h_bck.pos_y, RIGHT, cur_block.y, cur_block) )
+        if(l_bck.pos_x == AREA_COL - 1 || IsCollide(cur_block, RIGHT) )
             break;
 
         cur_block.bp.pos_x += 1;
         break;
     case SPACE: //一次到底
         //一格一格试错下移，直到不能下移
-        while(!IsCollide(h_bck.pos_x, h_bck.pos_y, DOWN, cur_block.y, cur_block))
+        while(!IsCollide(cur_block, DOWN))
         {
             //new：根据实时y坐标增加，并确定当前pos_y以用于碰撞检测
             cur_block.y += fallingHeight;

@@ -193,6 +193,7 @@ void Widget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数！�
     painter.drawText(QRect(AREA_COL*BLOCK_SIZE + 1.7*lMARGIN-uOff, 4.16*uMARGIN, 100, 100),Qt::AlignCenter,QString::number(MaxCombo));
 
     /* 绘制当前块(要实现平滑下落必须得单拎出来绘制：cur_block) */
+    // 注意**消块处理过程**中cur_block置空不绘制出来！
     painter.save(); //通过移动转变坐标系来绘制（注意复原）
     tImg = cur_block.img;
     scale = static_cast<qreal>(tImg.width()) / tImg.height();
