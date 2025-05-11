@@ -62,7 +62,7 @@ void Widget::BlockTranslate(Direction key_dir)
         {
             //new：根据实时y坐标增加，并确定当前pos_y以用于碰撞检测
             cur_block.y += fallingHeight;
-            cur_block.bp.pos_y = qCeil(cur_block.y / BLOCK_SIZE * 1.0);  //注意实体修改！
+            cur_block.bp.pos_y = qFloor(cur_block.y / BLOCK_SIZE * 1.0);  //注意实体修改！
         }
         ConvertStable(cur_block.bp.pos_x, cur_block.bp.pos_y);
         landEffect->play();

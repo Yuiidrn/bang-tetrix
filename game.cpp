@@ -65,7 +65,7 @@ void Widget::InitGame()
             game_area[i][j] = Block_info(); //默认构造函数作初始化
 
     //剩余乐队及成员管理
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < SET_NUM/*BAND_NUM*/; i++)
         bandRest.insert(i); // bandRest = {0,1,2,3,4,5,6,7,8};
 
     for(int j = 0; j < CHAR_NUM; j++)
@@ -97,7 +97,7 @@ void Widget::InitGame()
 
     //设置初始下落延迟速度和刷新率
     speed_ms = 25;
-    fallingHeight = 3;
+    fallingHeight = 5;
     refresh_ms = 16;     //1000ms / 60FPS = 16.67; 1000ms / 165FPS = 6.06
 
     //初始化随机数种子

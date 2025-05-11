@@ -8,12 +8,36 @@ void Widget::CreateBlock(Block_info &head_block)    //对next_block的引用传�
     head_block = Block_info();   //使用默认构造函数 创建实例
 
     QString ImgPath = ":/imgs/img/", rbandSoundPath = "qrc:/sounds/sound/";
-    int prob = 0;
-    for(auto rest : charRest) //剩余成员越少，万能块越容易刷出
-        prob += rest.size();
-    prob /= 2;
-    int is_item = rand() % prob;
-    if(is_item < prob - 1){
+    int sum = 0;
+    for(int i = 0; i < SET_NUM/*BAND_NUM*/; i++)
+        sum += charRest[i].size();
+    int is_item = -1;
+    if(sum > 0)       //避免模零异常，下同
+        is_item = rand() % sum;
+    const double prob = 1/3.0; //基于剩余成员越少，万能块越容易刷出的动态概率(整型数判断)
+
+    if(is_item > sum *(1-prob) || is_item < 0){ //无剩余乐队则必是物块，同时避免rof模零异常
+        int numItems = 3;
+        switch (rand() % numItems) {
+        case 0:
+            ImgPath += "items/coffee.png";
+            head_block.char_name = "coffee";
+            break;
+        case 1:
+            ImgPath += "items/coronet.png";
+            head_block.char_name = "coronet";
+            break;
+        case 2:
+            ImgPath += "items/croquette.png";
+            head_block.char_name = "croquette";
+            break;
+        default:
+            break;
+        }
+        head_block.belong = Item;
+        head_block.bandSoundPath = rbandSoundPath;
+    }
+    else {
         //人物乐队所属及成员名随机逻辑(主要是通过基于集合内元素多少而随机迭代器偏移量(random_offset)实现)   tip.前缀r表示"random"
         QSet<int>::const_iterator rB_it(bandRest.begin());
         int rof1 = rand()%bandRest.size();      //bandRest.size(); 减少余数以增加同乐队成员概率
@@ -34,27 +58,6 @@ void Widget::CreateBlock(Block_info &head_block)    //对next_block的引用传�
         rbandSoundPath += "bandSound/" + bandList[rBand_id] + ".wav";
         head_block.belong = Band_name(rBand_id);
         head_block.char_name = nameList[rBand_id][rChar_id];
-        head_block.bandSoundPath = rbandSoundPath;
-    }
-    else {
-        int numItems = 3;
-        switch (rand() % numItems) {
-        case 0:
-            ImgPath += "items/coffee.png";
-            head_block.char_name = "coffee";
-            break;
-        case 1:
-            ImgPath += "items/coronet.png";
-            head_block.char_name = "coronet";
-            break;
-        case 2:
-            ImgPath += "items/croquette.png";
-            head_block.char_name = "croquette";
-            break;
-        default:
-            break;
-        }
-        head_block.belong = Item;
         head_block.bandSoundPath = rbandSoundPath;
     }
 
