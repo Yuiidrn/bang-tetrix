@@ -4,11 +4,16 @@
 #include <QWidget>
 #include <QScreen>
 #include <QApplication>
+#include "./scoreTable/scoretable.h"
+#include "./scoreTable/scoreinputdialog.h"
+#include "./scoreTable/scoremanager.h"
+#include <QMessageBox>
+#include <QRandomGenerator>
 
 namespace Ui {class Start;}
 
-class Widget; //前置声明（作空载体，用于承载在.cpp文件中才引入game.h中的Widget，从而避免头文件相互引用）
-//——人话就是在.cpp才引用需要的.h，而另一边又不直接引用.cpp文件，所以就不存在循环引用的问题咯
+class GameWidget; //前置声明（作空载体，用于承载在.cpp文件中才引入game.h中的Widget，从而避免头文件相互引用）
+//说人话就是在.cpp才引用需要的.h，而另一边又不直接引用.cpp文件，所以就不存在循环引用的问题咯
 
 class Start : public QWidget
 {
@@ -22,13 +27,46 @@ public:
     ~Start();
 
 public:
-    Widget *game;
+    GameWidget *game;
+
+public slots:
+    void scoreRecord(int end_score);
 
 private slots:
     void switchToGame();
 
+    void on_showScoreTableButton_clicked();
+    void onScoreTableTypeChanged(ScoreTableType newType);
+
+    // 新增网络相关槽函数
+    void onWorldRankingsUpdated();
+    void onNetworkError(const QString &errorMessage);
+    void onSyncCompleted(bool success);
+    void onScoreUploadCompleted(bool success);
+
 private:
-    Ui::Start *ui;  
+    Ui::Start *ui;
+    ScoreTable *scoreTable;
+    ScoreManager *scoreManager;
+
+    // 显示排行榜
+    void showScoreTable();
+
+    // 加载数据
+    void loadScoreData();
+
+    // 生成随机分数（模拟游戏结束）
+    int generateRandomScore();
+
+    // 检查是否创造了新高记录
+    bool checkIfNewRecord(int score);
+
+    // 显示自定义玩家名称输入对话框
+    QString getPlayerNameInput(int score, bool isNewRecord);
+
+    // 关闭分数排行榜
+    void closeScoreTable();
+
 };
 
 #endif // START_H

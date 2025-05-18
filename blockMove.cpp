@@ -3,13 +3,13 @@
 inline void block_cpy(Block_info &dblock, Block_info &sblock) { dblock = sblock; }
 
 //旋转
-void Widget::BlockRotate(Block_info &head_block)
+void GameWidget::BlockRotate(Block_info &head_block)
 {
     head_block.dir = (head_block.dir + 1) % 4;
 }
 
 //平移
-void Widget::BlockTranslate(Direction key_dir)
+void GameWidget::BlockTranslate(Direction key_dir)
 {
     //整体逻辑是以判头块为主！头块为实体而腿块为虚体仅作碰撞判断用，即确定好头块位置前就预留有放腿块的空间
     block_point h_bck = cur_block.bp, l_bck = h_bck;

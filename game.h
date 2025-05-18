@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include "start.h"
-#include "background.h"
+#include "backgroundInfo.h"
 #include "blockInfo.h"
 #include <QWidget>
 #include <QApplication>
@@ -31,7 +31,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
 
-class Widget : public QWidget
+class GameWidget : public QWidget
 {
     Q_OBJECT
 signals:
@@ -60,10 +60,9 @@ public:
     void onPlayingChanged();    //音效切换
     void goToMainMenu();        //界面切换
 
-
 public:
-    Widget(QWidget *parent = nullptr);
-    ~Widget();
+    GameWidget(QWidget *parent = nullptr);
+    ~GameWidget();
 
     void paintEvent(QPaintEvent *event); //场景刷新    
     void keyPressEvent(QKeyEvent *event); //键盘响应

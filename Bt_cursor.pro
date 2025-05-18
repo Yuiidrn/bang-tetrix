@@ -15,12 +15,18 @@ SOURCES += \
     blockMove.cpp \
     game.cpp \
     main.cpp \
+    scoreTable/scoreinputdialog.cpp \
+    scoreTable/scoremanager.cpp \
+    scoreTable/scoretable.cpp \
     start.cpp
 
 HEADERS += \
+    backgroundInfo.h \
     blockInfo.h \
-    background.h \
     game.h \
+    scoreTable/scoreinputdialog.h \
+    scoreTable/scoremanager.h \
+    scoreTable/scoretable.h \
     start.h
 
 FORMS += \

@@ -1,0 +1,15 @@
+release/blockLogic.o
+release/blockMatch.o
+release/blockMove.o
+release/game.o
+release/main.o
+release/scoreinputdialog.o
+release/scoremanager.o
+release/scoretable.o
+release/start.o
+release/qrc_resource.o
+release/moc_game.o
+release/moc_scoreinputdialog.o
+release/moc_scoremanager.o
+release/moc_scoretable.o
+release/moc_start.o

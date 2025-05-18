@@ -14,7 +14,7 @@ inline void Sleep(unsigned int msec){
 int vis[AREA_ROW][AREA_COL] = {0};
 QVector<Block_info> v; //用来存相消块
 //递归检查消除
-int Widget::BlockCheck()
+int GameWidget::BlockCheck()
 {
     //处理消块，整个场景悬空人物头块下移（并发出相应乐队信号！反馈播出相应bgm）, 考虑使用槽和信号？
         //连通块BFS搜索，相消后还得整体下移
@@ -90,7 +90,7 @@ int Widget::BlockCheck()
 }
 
 //收尾
-void Widget::onPlayingChanged(){
+void GameWidget::onPlayingChanged(){
     //场景预刷新操作
     memset(vis, 0, sizeof(vis));                         //vis重置
     for(Block_info &tb : v)

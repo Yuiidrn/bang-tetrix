@@ -22,6 +22,7 @@ class Ui_Start
 public:
     QPushButton *begin;
     QLabel *bg;
+    QPushButton *showScoreTableButton;
 
     void setupUi(QWidget *Start)
     {
@@ -43,8 +44,30 @@ public:
         bg->setObjectName("bg");
         bg->setGeometry(QRect(0, 0, 1200, 675));
         bg->setPixmap(QPixmap(QString::fromUtf8(":/imgs/img/ui/welcome.png")));
+        showScoreTableButton = new QPushButton(Start);
+        showScoreTableButton->setObjectName("showScoreTableButton");
+        showScoreTableButton->setGeometry(QRect(80, 280, 209, 50));
+        showScoreTableButton->setMinimumSize(QSize(200, 50));
+        QFont font;
+        font.setFamilies({QString::fromUtf8("\345\276\256\350\275\257\351\233\205\351\273\221")});
+        font.setPointSize(12);
+        font.setBold(true);
+        showScoreTableButton->setFont(font);
+        showScoreTableButton->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"    background-color: #4CAF50;\n"
+"    color: white;\n"
+"    border-radius: 10px;\n"
+"    padding: 8px 16px;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: #45a049;\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: #3d8b40;\n"
+"}"));
         bg->raise();
         begin->raise();
+        showScoreTableButton->raise();
 
         retranslateUi(Start);
 
@@ -59,6 +82,7 @@ public:
         Start->setWindowTitle(QCoreApplication::translate("Start", "Form", nullptr));
         begin->setText(QString());
         bg->setText(QString());
+        showScoreTableButton->setText(QCoreApplication::translate("Start", "\346\216\222\350\241\214\346\246\234", nullptr));
     } // retranslateUi
 
 };

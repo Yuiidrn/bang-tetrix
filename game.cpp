@@ -1,7 +1,7 @@
 #include "game.h"
 #include "ui_widget.h"
 
-Widget::Widget(QWidget *parent)
+GameWidget::GameWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
 {
@@ -29,7 +29,7 @@ inline void Sleep(unsigned int msec){
 }
 
 //图片动画切换逻辑（不跟场景一起重绘，直接定个label占住相应位置）
-void Widget::onMTimeOut(){ //不能在时间槽函数里这里定义指针！！否则会画面会滞留在窗口上
+void GameWidget::onMTimeOut(){ //不能在时间槽函数里这里定义指针！！否则会画面会滞留在窗口上
     char cStrPath[100] = {'\0'};
     sprintf(cStrPath, ":/imgs/img/ui/marina-%d.png", currentIndex);
     QString path = cStrPath;
@@ -47,15 +47,15 @@ void Widget::onMTimeOut(){ //不能在时间槽函数里这里定义指针！！
         Marina->setPixmap(map); //下落过程中保持第一张图片
     }
 }
-void Widget::playStartMA(){ //动画定时器
+void GameWidget::playStartMA(){ //动画定时器
     currentIndex = 1;
     Mtimer->start(); // 启动定时器
 }
 
 //界面及场景逻辑
-void Widget::initMenu(Start *menu){ this->menu = menu; }
-void Widget::goToMainMenu(){ this->hide(); menu->show(); }
-void Widget::InitGame()
+void GameWidget::initMenu(Start *menu){ this->menu = menu; }
+void GameWidget::goToMainMenu(){ this->hide(); menu->show(); }
+void GameWidget::InitGame()
 {
     ini_block = Block_info();  //空块，重置赋零值用
     iniPos_x = 4, iniPos_y = 0;  //设置生成位置坐标
@@ -75,8 +75,8 @@ void Widget::InitGame()
         ss = ini_set;           //设置为满员
 
     //麻里奈动画设置：其他槽及信号链接设置 必须声明指针！！
-    void(Widget::*MarinaAnimation0)() = &Widget::MarinaAnimation; //指明不带参信号指针
-    void(Widget::*playStartMA0)() = &Widget::playStartMA;         //指明不带参槽指针
+    void(GameWidget::*MarinaAnimation0)() = &GameWidget::MarinaAnimation; //指明不带参信号指针
+    void(GameWidget::*playStartMA0)() = &GameWidget::playStartMA;         //指明不带参槽指针
     connect(this, MarinaAnimation0, this, playStartMA0);
     Marina = new QLabel(this);
 
@@ -109,7 +109,7 @@ void Widget::InitGame()
     StartGame();
     landEffect->play();
 }
-void Widget::StartGame()
+void GameWidget::StartGame()
 {
     //改用定义实例计时器进行操作(方便后续的音效暂停)
     gameTimer = new QTimer(this);
@@ -133,7 +133,7 @@ void Widget::StartGame()
     gameTimer->start();
     refreshTimer->start();
 }
-void Widget::GameOver()
+void GameWidget::GameOver()
 {
     gameTimer->stop();
     refreshTimer->stop();
@@ -147,6 +147,9 @@ void Widget::GameOver()
     QPushButton *mainMenuButton = msgBox.addButton("返回主菜单", QMessageBox::NoRole);
     msgBox.addButton("退出游戏", QMessageBox::RejectRole);  // 默认的退出按钮
 
+    // 录入分数
+    menu->scoreRecord(score);
+
     // 显示消息框
     msgBox.exec();
     // 处理用户选择的按钮
@@ -159,7 +162,7 @@ void Widget::GameOver()
     }
 }
 
-void Widget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数！也可用原窗口上定义图形类并set的方式
+void GameWidget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数！也可用原窗口上定义图形类并set的方式
 {
     QPainter painter(this);
     //绘制游戏场景
@@ -260,7 +263,7 @@ void Widget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数！�
             }
         }
 }
-void Widget::keyPressEvent(QKeyEvent *event)
+void GameWidget::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key())
     {
@@ -286,7 +289,7 @@ void Widget::keyPressEvent(QKeyEvent *event)
         break;
     }
 }
-bool Widget::eventFilter(QObject *watched, QEvent *event)
+bool GameWidget::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched == this){ //监视对象为本窗口游戏界面
         //过滤用户输入事件
@@ -308,4 +311,4 @@ bool Widget::eventFilter(QObject *watched, QEvent *event)
     }
 }
 
-Widget::~Widget() { delete ui; }
+GameWidget::~GameWidget() { delete ui; }

@@ -3,7 +3,7 @@
 inline void block_cpy(Block_info &dblock, Block_info &sblock) { dblock = sblock; }
 
 //物块创建
-void Widget::CreateBlock(Block_info &head_block)    //对next_block的引用传递！
+void GameWidget::CreateBlock(Block_info &head_block)    //对next_block的引用传递！
 {
     head_block = Block_info();   //使用默认构造函数 创建实例
 
@@ -78,7 +78,7 @@ void Widget::CreateBlock(Block_info &head_block)    //对next_block的引用传�
 }
 
 //物块重置
-void Widget::ResetBlock()
+void GameWidget::ResetBlock()
 {
     //应该是先判断游戏是否结束才进行替换(初始位置是否已经被占据)
     if(game_area[next_block.bp.pos_y][next_block.bp.pos_x].is_stable) {
@@ -101,7 +101,7 @@ void Widget::ResetBlock()
 }
 
 //转化为稳定块(同时判断游戏是否结束)
-void Widget::ConvertStable(int x, int pos_y, Block_info &cpy_Block)
+void GameWidget::ConvertStable(int x, int pos_y, Block_info &cpy_Block)
 {
     //头部
     block_cpy(game_area[pos_y][x], cpy_Block);
@@ -128,7 +128,7 @@ void Widget::ConvertStable(int x, int pos_y, Block_info &cpy_Block)
     }
 }
 //碰撞逻辑
-bool Widget::IsCollide(Block_info check_block, Direction key_dir)  //给定为头块坐标
+bool GameWidget::IsCollide(Block_info check_block, Direction key_dir)  //给定为头块坐标
 {
     /*试错法！！！碰撞检测很值得学习的思路！*/
     //用临时方向做判断
