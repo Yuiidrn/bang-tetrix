@@ -70,7 +70,7 @@ void Widget::CreateBlock(Block_info &head_block)    //对next_block的引用传�
 
     //设置初始人物块基本信息（先实现正常下落）
     head_block.img = QPixmap(ImgPath);
-    head_block.y = 2*BLOCK_SIZE + fallingHeight;   //改为页边栏就开始下坠
+    head_block.y = fallingHeight;   //改为页边栏就开始下坠
     head_block.bp.pos_x = rPos_x;   //AREA_COL/2
     head_block.bp.pos_y = qFloor(head_block.y / BLOCK_SIZE * 1.0);
     head_block.is_head = 1; //头部标识
@@ -114,7 +114,7 @@ void Widget::ConvertStable(int x, int pos_y, Block_info &cpy_Block)
         //（无非两种情况：头出或腿出，而开始生成的话头块以固定为第一行，结合现实不太可能会有头出的情况，因此需格外排除腿出的情况）
 
         //出口顶端也有稳定方块且存在腿部出界
-        if(game_area[iniPos_y][iniPos_x].is_stable || (game_area[iniPos_y][x].is_stable && game_area[iniPos_y][x].dir == 2) )
+        if(game_area[iniPos_y][iniPos_x].is_stable ) // || (game_area[iniPos_y][x].is_stable && game_area[iniPos_y][x].dir == 2)
         {
             GameOver();
         }
@@ -165,19 +165,22 @@ bool Widget::IsCollide(Block_info check_block, Direction key_dir)  //给定为�
     // int BOTTOM = BLOCK_SIZE * AREA_ROW + 2 * fallingHeight;
     if( !is_item ){
         //额外获取腿部块方位 直接再补加一层di[dir]和dj[dir]推出（腿部延申块）
-        int leg_x = x + dj[t_dir], leg_pos_y = pos_y + di[t_dir], tLeg_pos_y = tpos_y + di[t_dir]; // leg_y = y + 2 * di[t_dir] * BLOCK_SIZE; //注意×2！头到脚底板是两个块宽！
+        int leg_x = x + dj[t_dir];
+        //下标非负性检查
+        int leg_pos_y = pos_y + di[t_dir] < 0 ? 0 : pos_y + di[t_dir];
+        int tLeg_pos_y = tpos_y + di[t_dir] < 0 ? 0 : tpos_y + di[t_dir];; // leg_y = y + 2 * di[t_dir] * BLOCK_SIZE; //注意×2！头到脚底板是两个块宽！
 
         //存在碰撞
         if( (game_area[tpos_y][x].is_stable || game_area[tLeg_pos_y][leg_x].is_stable) ||
             (game_area[pos_y][x].is_stable || game_area[leg_pos_y][leg_x].is_stable) ||
-            (x < 0 || leg_x < 0) || (x > AREA_COL - 1 || leg_x > AREA_COL - 1) ||
+            (x < 0 || leg_x < 0) || (x > AREA_COL - 1 || leg_x > AREA_COL - 1) ||  //
             (pos_y > AREA_ROW - 1 || leg_pos_y > AREA_ROW - 1) ) //注意加下边界！
             return true;
 
         return false;
     }
     else {
-        if( game_area[pos_y][x].is_stable || x < 0 || x > AREA_COL - 1 || pos_y > AREA_ROW - 1 )
+        if( (game_area[tpos_y][x].is_stable || game_area[pos_y][x].is_stable) || (x < 0 || x > AREA_COL - 1 || pos_y > AREA_ROW - 1) )
             return true; //物体块1*1碰撞
         return false;
     }

@@ -62,7 +62,7 @@ void Widget::InitGame()
     //清空场景
     for(int i = 0; i < AREA_ROW; i++)
         for(int j = 0; j < AREA_COL; j++)
-            game_area[i][j] = Block_info(); //默认构造函数作初始化
+            game_area[i][j] = ini_block; //默认构造函数作初始化
 
     //剩余乐队及成员管理
     for(int i = 0; i < SET_NUM/*BAND_NUM*/; i++)

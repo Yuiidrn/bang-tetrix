@@ -15,7 +15,6 @@ enum Direction
     LEFT,
     RIGHT,
     SPACE,
-    Gravity //稳定块的重力碰撞
 };
 
 #endif // BACKGROUND_H
