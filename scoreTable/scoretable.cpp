@@ -5,6 +5,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QDateTime>
 #include <algorithm>
+#include <QApplication>
 
 ScoreTable::ScoreTable(QWidget *parent)
     : QWidget(parent), currentType(PERSONAL_HISTORY)
@@ -351,7 +352,44 @@ void ScoreTable::keyPressEvent(QKeyEvent *event)
 
 void ScoreTable::hideEvent(QHideEvent *event)
 {
+    // 当窗口隐藏时，移除全局事件过滤器
+    qApp->removeEventFilter(this);
+
     // 无论何种原因导致窗口隐藏，都发送关闭信号
     emit closed();
     QWidget::hideEvent(event);
-} 
+}
+void ScoreTable::showAndInstallFilter()
+{
+    // 显示窗口
+    show();
+
+    // 安装全局事件过滤器
+    qApp->installEventFilter(this);
+}
+
+bool ScoreTable::eventFilter(QObject *watched, QEvent *event)
+{
+    // 如果是鼠标按下事件
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+
+        // 如果启用了点击外部关闭功能
+
+        // 获取鼠标在屏幕上的坐标
+        QPoint globalPos = mouseEvent->globalPosition().toPoint();
+
+        // 将全局坐标转换为窗口坐标
+        QPoint localPos = mapFromGlobal(globalPos);
+
+        // 检查点击是否在窗口区域外
+        if (!rect().contains(localPos)) {
+            // 如果点击在窗口外部，隐藏窗口
+            hide();
+            return true; // 事件已处理
+        }
+    }
+
+    // 其他事件交给默认处理
+    return QWidget::eventFilter(watched, event);
+}

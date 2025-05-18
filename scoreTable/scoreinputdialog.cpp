@@ -322,5 +322,57 @@ void ScoreInputDialog::drawDefaultBackground(QPainter &painter, const QRect &rec
 void ScoreInputDialog::checkInput()
 {
     // 检查输入是否为空，更新确认按钮状态
-    okButton->setEnabled(!nameInput->text().isEmpty());
+    bool isEmpty = nameInput->text().trimmed().isEmpty();
+    okButton->setEnabled(!isEmpty);
+
+    // 如果输入框失去焦点且为空，显示提示
+    if (isEmpty && !nameInput->hasFocus()) {
+        // 设置输入框样式为错误状态
+        nameInput->setStyleSheet(
+            "QLineEdit {"
+            "    background-color: rgba(255, 255, 255, 220);"
+            "    border-radius: 10px;"
+            "    padding: 5px 10px;"
+            "    color: #333333;"
+            "    border: 2px solid #F44336;"
+            "}"
+            "QLineEdit:focus {"
+            "    border: 2px solid #4CAF50;"
+            "}"
+        );
+
+        // 更新提示文字，显示错误信息
+        inputPromptLabel->setText("<font color='#F44336'>用户名不能为空!</font>");
+    } else {
+        // 恢复正常样式
+        nameInput->setStyleSheet(
+            "QLineEdit {"
+            "    background-color: rgba(255, 255, 255, 220);"
+            "    border-radius: 10px;"
+            "    padding: 5px 10px;"
+            "    color: #333333;"
+            "    border: 1px solid #CCCCCC;"
+            "}"
+            "QLineEdit:focus {"
+            "    border: 2px solid #4CAF50;"
+            "}"
+        );
+
+        // 恢复正常提示
+        if (isNewHighScore) {
+            inputPromptLabel->setText("创造了新高分！请输入您的用户名:");
+        } else {
+            inputPromptLabel->setText("请输入您的用户名:");
+        }
+    }
 } 
+
+bool ScoreInputDialog::eventFilter(QObject *watched, QEvent *event)
+{
+    // 监控输入框的焦点变化事件
+    if (watched == nameInput && event->type() == QEvent::FocusOut) {
+        // 输入框失去焦点时检查输入
+        checkInput();
+    }
+    return QDialog::eventFilter(watched, event);
+}

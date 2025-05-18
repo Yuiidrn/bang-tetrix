@@ -14,6 +14,7 @@
 #include <QHideEvent>
 #include <QDateTime>
 #include <QStandardItem>
+#include <QEvent>
 
 // 排行榜类型枚举
 enum ScoreTableType {
@@ -62,9 +63,13 @@ public:
     // 更新表格显示
     void updateTableDisplay();
 
+    // 显示排行榜并安装全局事件过滤器
+    void showAndInstallFilter();
+
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     void hideEvent(QHideEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
     QVBoxLayout *mainLayout;

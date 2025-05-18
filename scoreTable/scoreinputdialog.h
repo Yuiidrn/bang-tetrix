@@ -34,6 +34,7 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
     QVBoxLayout *mainLayout;

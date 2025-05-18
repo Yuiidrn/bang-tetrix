@@ -108,7 +108,8 @@ void Start::showScoreTable()
     QPoint center = this->mapToGlobal(this->rect().center());
     scoreTable->move(center.x() - scoreTable->width() / 2, center.y() - scoreTable->height() / 2);
 
-    scoreTable->show();
+    // 使用新的方法显示排行榜并安装全局事件过滤器
+    scoreTable->showAndInstallFilter();
 }
 
 void Start::closeScoreTable()
