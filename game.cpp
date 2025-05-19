@@ -132,11 +132,14 @@ void GameWidget::StartGame()
 
     gameTimer->start();
     refreshTimer->start();
+    // this->removeEventFilter(this);
 }
 void GameWidget::GameOver()
 {
     gameTimer->stop();
     refreshTimer->stop();
+    // this->installEventFilter(this);
+
     QMessageBox msgBox;
     msgBox.setWindowTitle("游戏结束");
     msgBox.setText("游戏结束！请选择您的操作：");

@@ -18,7 +18,6 @@ Start::Start(QWidget *parent) :
     this->resize(defaultWidth, defaultHeight);
     //直接通过ui指针访问图片进行尺寸修改（可视化编程而不使用paintEvent（因直接套的非ui设计的主体代码，在游戏主体中没用上））
     ui->bg->setFixedSize(defaultWidth, defaultHeight);
-    ui->begin->setStyleSheet("border:none;");
 
     //界面切换槽函数（也可使用窗口类自带的keyPressEvent()）
     connect(ui->begin, &QPushButton::clicked, this, [=](){switchToGame();}); //槽函数也需要lambda表达式封装！
@@ -59,7 +58,8 @@ Start::~Start(){     // 保存积分数据
         scoreManager->saveLocalScores();
     }
 
-    delete ui;}
+    delete ui;
+}
 
 void Start::initGame(){
     game = new GameWidget();
@@ -234,3 +234,4 @@ void Start::onScoreUploadCompleted(bool success)
         qDebug() << "分数上传失败";
     }
 }
+

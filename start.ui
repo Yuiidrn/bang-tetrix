@@ -19,24 +19,38 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1200</width>
-     <height>675</height>
+     <x>190</x>
+     <y>250</y>
+     <width>161</width>
+     <height>51</height>
     </rect>
    </property>
    <property name="mouseTracking">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="toolTipDuration">
     <number>-8</number>
    </property>
    <property name="styleSheet">
-    <string notr="true">ui-&gt;pushButton-&gt;setStyleSheet(&quot;QPushButton:hover { background-color: none; }&quot;);
-</string>
+    <string notr="true">QPushButton {
+    background-color: #4CAF50;
+    color: white;
+    font:  16pt &quot;华文彩云&quot;;
+    border-radius: 10px;
+    padding: 8px 16px;
+}
+QPushButton:hover {
+    background-color: #45a049;
+}
+QPushButton:pressed {
+    background-color: #3d8b40;
+}</string>
    </property>
    <property name="text">
-    <string/>
+    <string>开始游戏</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
    </property>
    <property name="checkable">
     <bool>false</bool>
@@ -48,7 +62,7 @@
     <bool>false</bool>
    </property>
    <property name="flat">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QLabel" name="bg">
@@ -70,37 +84,28 @@
   <widget class="QPushButton" name="showScoreTableButton">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>280</y>
-     <width>209</width>
-     <height>50</height>
+     <x>190</x>
+     <y>310</y>
+     <width>161</width>
+     <height>51</height>
     </rect>
    </property>
-   <property name="minimumSize">
-    <size>
-     <width>200</width>
-     <height>50</height>
-    </size>
-   </property>
-   <property name="font">
-    <font>
-     <family>微软雅黑</family>
-     <pointsize>12</pointsize>
-     <bold>true</bold>
-    </font>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;阿松大&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton {
-    background-color: #4CAF50;
+    background-color: #2196F3;
     color: white;
+    font:  16pt &quot;华文彩云&quot;;
     border-radius: 10px;
     padding: 8px 16px;
 }
 QPushButton:hover {
-    background-color: #45a049;
+    background-color: #1e88e5;
 }
 QPushButton:pressed {
-    background-color: #3d8b40;
+    background-color: #1976d2;
 }</string>
    </property>
    <property name="text">

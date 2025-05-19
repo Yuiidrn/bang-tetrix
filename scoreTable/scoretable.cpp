@@ -12,7 +12,8 @@ ScoreTable::ScoreTable(QWidget *parent)
 {
     // 设置窗口为无边框，但不使用Popup类型以避免点击外部自动关闭
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground);
+    // this->setWindowOpacity(0.5);
+    // setAttribute(Qt::WA_TranslucentBackground);
     
     // 创建主布局
     mainLayout = new QVBoxLayout(this);
@@ -130,16 +131,16 @@ ScoreTable::ScoreTable(QWidget *parent)
     escHintLabel->setStyleSheet("color: #555;");
     mainLayout->addWidget(escHintLabel);
     
-    // 设置窗口整体样式
+    // 设置表格窗口整体样式
     setStyleSheet(
         "ScoreTable {"
-        "    background-color: rgba(245, 245, 245, 240);"
-        "    border-radius: 15px;"
+        "    background-color: rgb(250, 250, 250);"
+        "    border-radius: 250px;"
         "}"
     );
     
     // 设置固定大小
-    setMinimumSize(500, 500);
+    setMinimumSize(470, 470);
 }
 
 ScoreTable::~ScoreTable()
