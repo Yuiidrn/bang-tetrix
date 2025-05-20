@@ -4,6 +4,7 @@
 #include "start.h"
 #include "backgroundInfo.h"
 #include "blockInfo.h"
+#include "GameOverDialog.h"
 #include <QWidget>
 #include <QApplication>
 #include <QtMultimedia>

@@ -7,7 +7,7 @@
 #include <QFile>
 
 ScoreInputDialog::ScoreInputDialog(QWidget *parent)
-    : QDialog(parent), playerScore(0), isNewHighScore(false), trophyLabel(nullptr)
+    : QDialog(parent), playerScore(0), maxCombo(0), isNewHighScore(false), trophyLabel(nullptr)
 {
     // 设置窗口属性
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
@@ -41,12 +41,28 @@ ScoreInputDialog::ScoreInputDialog(QWidget *parent)
     titleLayout->addWidget(headerLabel);
     titleLayout->addStretch();
     
+    // 创建分数和连击数竖排布局
+    QVBoxLayout *statsLayout = new QVBoxLayout();
+    statsLayout->setSpacing(5);
+    statsLayout->setAlignment(Qt::AlignCenter);
+    
     // 添加分数标签
     scoreLabel = new QLabel("分数: 0", this);
-    QFont scoreFont("微软雅黑", 22, QFont::Bold);
+    QFont scoreFont("华文彩云", 30, QFont::Bold);
     scoreLabel->setFont(scoreFont);
     scoreLabel->setAlignment(Qt::AlignCenter);
     scoreLabel->setStyleSheet("color: #FFD700; background-color: transparent;");
+
+    // 添加连击标签
+    comboLabel = new QLabel("最大连击: 0", this);
+    QFont comboFont("华文琥珀", 22, QFont::Bold);
+    comboLabel->setFont(comboFont);
+    comboLabel->setAlignment(Qt::AlignCenter);
+    comboLabel->setStyleSheet("color: #FF4500; background-color: transparent;");
+    
+    // 将分数和连击数添加到竖排布局
+    statsLayout->addWidget(scoreLabel);
+    statsLayout->addWidget(comboLabel);
     
     // 添加输入提示标签
     inputPromptLabel = new QLabel("请输入您的用户名:", this);
@@ -126,7 +142,7 @@ ScoreInputDialog::ScoreInputDialog(QWidget *parent)
     
     // 组装主布局
     mainLayout->addLayout(titleLayout);
-    mainLayout->addWidget(scoreLabel);
+    mainLayout->addLayout(statsLayout); // 添加竖排的分数和连击数布局
     mainLayout->addSpacing(20);
     mainLayout->addWidget(inputPromptLabel);
     mainLayout->addWidget(nameInput);
@@ -141,8 +157,8 @@ ScoreInputDialog::ScoreInputDialog(QWidget *parent)
     this->setGraphicsEffect(shadowEffect);
     
     // 设置固定大小
-    setMinimumSize(400, 350);
-    resize(400, 350);
+    setMinimumSize(400, 400); // 增加高度以适应新增的连击数显示
+    resize(400, 400);
     
     // 连接信号和槽
     connect(okButton, &QPushButton::clicked, this, &QDialog::accept);
@@ -230,10 +246,13 @@ void ScoreInputDialog::setScore(int score, bool isNewRecord)
     }
 }
 
-QString ScoreInputDialog::getPlayerName() const
+void ScoreInputDialog::setMaxCombo(int combo)
 {
-    return nameInput->text();
+    maxCombo = combo;
+    comboLabel->setText(QString("最大连击: %1").arg(combo));
 }
+
+QString ScoreInputDialog::getPlayerName() const { return nameInput->text(); }
 
 void ScoreInputDialog::setDefaultName(const QString &name)
 {

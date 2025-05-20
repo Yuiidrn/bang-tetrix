@@ -128,16 +128,17 @@ void Start::onScoreTableTypeChanged(ScoreTableType newType)
     loadScoreData();
 }
 
-void Start::scoreRecord(int end_score)
+void Start::scoreRecord(int end_score, int end_combo)
 {
     // 录入分数分数
     int score = end_score;
+    int combo = end_combo;
 
     // 检查是否创造了新高记录
     bool isNewRecord = checkIfNewRecord(score);
 
     // 显示分数结算对话框并获取玩家名称，若是新高记录则提示用户
-    QString playerName = getPlayerNameInput(score, isNewRecord);
+    QString playerName = getPlayerNameInput(score, combo, isNewRecord);
 
     // 如果玩家取消输入，不添加成绩
     if (playerName.isEmpty()) {
@@ -169,7 +170,7 @@ bool Start::checkIfNewRecord(int score)
     return false;
 }
 
-QString Start::getPlayerNameInput(int score, bool isNewRecord)
+QString Start::getPlayerNameInput(int score, int combo, bool isNewRecord)
 {
     // 创建自定义对话框
     ScoreInputDialog dialog(this);
@@ -178,8 +179,11 @@ QString Start::getPlayerNameInput(int score, bool isNewRecord)
     QString defaultName = "玩家" + QString::number(QRandomGenerator::global()->bounded(1000, 10000));
     dialog.setDefaultName(defaultName);
 
-    // 设置分数和是否为新高分
+    // 设置分数并判断是否为新高分
     dialog.setScore(score, isNewRecord);
+
+    //设置连击数
+    dialog.setMaxCombo(combo);
 
     // 设置背景图片（如果图片存在）
     if (QFile(":/imgs/img/ui/inputbg.jpg").exists()) {

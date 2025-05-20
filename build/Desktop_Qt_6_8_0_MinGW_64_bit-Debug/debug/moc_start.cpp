@@ -41,6 +41,7 @@ constexpr auto qt_meta_stringdata_CLASSStartENDCLASS = QtMocHelpers::stringData(
     "scoreRecord",
     "",
     "end_score",
+    "end_combo",
     "switchToGame",
     "on_showScoreTableButton_clicked",
     "onScoreTableTypeChanged",
@@ -72,24 +73,24 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSStartENDCLASS[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   62,    2, 0x0a,    1 /* Public */,
-       4,    0,   65,    2, 0x08,    3 /* Private */,
-       5,    0,   66,    2, 0x08,    4 /* Private */,
-       6,    1,   67,    2, 0x08,    5 /* Private */,
-       9,    0,   70,    2, 0x08,    7 /* Private */,
-      10,    1,   71,    2, 0x08,    8 /* Private */,
-      12,    1,   74,    2, 0x08,   10 /* Private */,
-      14,    1,   77,    2, 0x08,   12 /* Private */,
+       1,    2,   62,    2, 0x0a,    1 /* Public */,
+       5,    0,   67,    2, 0x08,    4 /* Private */,
+       6,    0,   68,    2, 0x08,    5 /* Private */,
+       7,    1,   69,    2, 0x08,    6 /* Private */,
+      10,    0,   72,    2, 0x08,    8 /* Private */,
+      11,    1,   73,    2, 0x08,    9 /* Private */,
+      13,    1,   76,    2, 0x08,   11 /* Private */,
+      15,    1,   79,    2, 0x08,   13 /* Private */,
 
  // slots: parameters
-    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int,    3,    4,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 7,    8,
+    QMetaType::Void, 0x80000000 | 8,    9,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,   11,
-    QMetaType::Void, QMetaType::Bool,   13,
-    QMetaType::Void, QMetaType::Bool,   13,
+    QMetaType::Void, QMetaType::QString,   12,
+    QMetaType::Void, QMetaType::Bool,   14,
+    QMetaType::Void, QMetaType::Bool,   14,
 
        0        // eod
 };
@@ -105,6 +106,7 @@ Q_CONSTINIT const QMetaObject Start::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<Start, std::true_type>,
         // method 'scoreRecord'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<int, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
         // method 'switchToGame'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
@@ -134,7 +136,7 @@ void Start::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
         auto *_t = static_cast<Start *>(_o);
         (void)_t;
         switch (_id) {
-        case 0: _t->scoreRecord((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 0: _t->scoreRecord((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2]))); break;
         case 1: _t->switchToGame(); break;
         case 2: _t->on_showScoreTableButton_clicked(); break;
         case 3: _t->onScoreTableTypeChanged((*reinterpret_cast< std::add_pointer_t<ScoreTableType>>(_a[1]))); break;

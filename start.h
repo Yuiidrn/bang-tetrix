@@ -30,7 +30,7 @@ public:
     GameWidget *game;
 
 public slots:
-    void scoreRecord(int end_score);
+    void scoreRecord(int end_score, int end_combo);
 
 private slots:
     void switchToGame();
@@ -62,7 +62,7 @@ private:
     bool checkIfNewRecord(int score);
 
     // 显示自定义玩家名称输入对话框
-    QString getPlayerNameInput(int score, bool isNewRecord);
+    QString getPlayerNameInput(int score, int combo, bool isNewRecord);
 
     // 关闭分数排行榜
     void closeScoreTable();

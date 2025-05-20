@@ -1,3 +1,4 @@
+release/GameOverDialog.o
 release/blockLogic.o
 release/blockMatch.o
 release/blockMove.o
@@ -8,6 +9,7 @@ release/scoremanager.o
 release/scoretable.o
 release/start.o
 release/qrc_resource.o
+release/moc_GameOverDialog.o
 release/moc_game.o
 release/moc_scoreinputdialog.o
 release/moc_scoremanager.o

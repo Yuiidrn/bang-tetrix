@@ -1,5 +1,7 @@
 #include "game.h"
 #include "ui_widget.h"
+#include "GameOverDialog.h"
+#include <QFile>
 
 GameWidget::GameWidget(QWidget *parent)
     : QWidget(parent)
@@ -140,25 +142,26 @@ void GameWidget::GameOver()
     refreshTimer->stop();
     // this->installEventFilter(this);
 
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("游戏结束");
-    msgBox.setText("游戏结束！请选择您的操作：");
-    msgBox.setInformativeText("您可以选择重新开始游戏或者返回主菜单。");
-
-    // 添加按钮
-    QPushButton *restartButton = msgBox.addButton("重新开始", QMessageBox::YesRole);
-    QPushButton *mainMenuButton = msgBox.addButton("返回主菜单", QMessageBox::NoRole);
-    msgBox.addButton("退出游戏", QMessageBox::RejectRole);  // 默认的退出按钮
-
     // 录入分数
-    menu->scoreRecord(score);
+    menu->scoreRecord(score, MaxCombo);
 
-    // 显示消息框
-    msgBox.exec();
+    // 创建游戏结束对话框
+    GameOverDialog dialog(this);
+    
+    // 设置背景图片（如果存在）
+    if (QFile(":/imgs/img/ui/inputbg.jpg").exists()) {
+        dialog.setBackgroundImage(":/imgs/img/ui/inputbg.jpg");
+    }
+    
+    // 显示对话框并等待用户选择
+    dialog.exec();
+    
     // 处理用户选择的按钮
-    if (msgBox.clickedButton() == restartButton) {
+    GameOverDialog::GameOverResult result = dialog.getResult();
+    
+    if (result == GameOverDialog::Restart) {
         InitGame();     // 调用重新开始游戏的方法
-    } else if (msgBox.clickedButton() == mainMenuButton) {
+    } else if (result == GameOverDialog::MainMenu) {
         goToMainMenu();  // 调用返回主菜单的方法
     } else {
         // QApplication::quit();  // 退出游戏

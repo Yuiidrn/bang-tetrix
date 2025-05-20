@@ -21,7 +21,10 @@ public:
 
     // 设置分数和是否为新高分
     void setScore(int score, bool isNewRecord);
-    
+
+    // 设置最大连击数
+    void setMaxCombo(int combo);
+
     // 获取输入的用户名
     QString getPlayerName() const;
     
@@ -40,6 +43,7 @@ private:
     QVBoxLayout *mainLayout;
     QLabel *headerLabel;
     QLabel *scoreLabel;
+    QLabel *comboLabel;
     QLabel *inputPromptLabel;
     QLineEdit *nameInput;
     QPushButton *okButton;
@@ -50,6 +54,7 @@ private:
     
     QString backgroundImagePath;
     int playerScore;
+    int maxCombo;
     bool isNewHighScore;
     
     // 绘制默认背景
