@@ -17,12 +17,12 @@ ScoreTable::ScoreTable(QWidget *parent)
     
     // 创建主布局
     mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(20, 20, 20, 20);
+    mainLayout->setContentsMargins(7, 15, 7, 15);  //左上右下
     mainLayout->setSpacing(15);
     
     // 添加标题
     titleLabel = new QLabel("个人历史记录排行榜", this);
-    QFont titleFont("微软雅黑", 16, QFont::Bold);
+    QFont titleFont("萝莉体", 16, QFont::Bold);
     titleLabel->setFont(titleFont);
     titleLabel->setAlignment(Qt::AlignCenter);
     mainLayout->addWidget(titleLabel);
@@ -34,7 +34,7 @@ ScoreTable::ScoreTable(QWidget *parent)
     personalHistoryButton = new QPushButton("个人历史记录", this);
     worldPlayersButton = new QPushButton("世界玩家排名", this);
     
-    QFont buttonFont("微软雅黑", 10);
+    QFont buttonFont("萝莉体", 10);
     personalHistoryButton->setFont(buttonFont);
     worldPlayersButton->setFont(buttonFont);
     
@@ -98,22 +98,47 @@ ScoreTable::ScoreTable(QWidget *parent)
         "    background-color: rgba(255, 255, 255, 240);"
         "    border-radius: 10px;"
         "    border: 1px solid #ddd;"
+        "    gridline-color: #e0e0e0;"
         "}"
         "QTableWidget::item {"
-        "    padding: 5px;"
+        "    padding: 8px 5px;"
+        "    border-bottom: 1px solid #f0f0f0;"
         "}"
         "QTableWidget::item:selected {"
-        "    background-color: #b8e6ff;"
+        "    background-color: #e3f2fd;"
+        "    color: #1565C0;"
         "}"
         "QHeaderView::section {"
-        "    background-color: #f0f0f0;"
-        "    padding: 5px;"
+        "    background-color: #2196F3;"
+        "    color: white;"
+        "    padding: 8px 5px;"
         "    font-weight: bold;"
         "    border: none;"
-        "    border-bottom: 1px solid #ddd;"
+        "    border-right: 1px solid #1976D2;"
+        "}"
+        "QTableWidget::item:alternate {"
+        "    background-color: #f7f7f7;"
+        "}"
+        "QScrollBar:vertical {"
+        "    background: #f0f0f0;"
+        "    width: 10px;"
+        "    margin: 0px;"
+        "}"
+        "QScrollBar::handle:vertical {"
+        "    background: #bbbbbb;"
+        "    min-height: 30px;"
+        "    border-radius: 5px;"
+        "}"
+        "QScrollBar::handle:vertical:hover {"
+        "    background: #999999;"
+        "}"
+        "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {"
+        "    height: 0px;"
         "}"
     );
-    
+    // 设置行高
+    tableWidget->verticalHeader()->setDefaultSectionSize(40);
+
     // 添加表格阴影效果
     QGraphicsDropShadowEffect *shadowEffect = new QGraphicsDropShadowEffect(this);
     shadowEffect->setBlurRadius(15);
@@ -296,49 +321,94 @@ void ScoreTable::updateTableDisplay()
         tableWidget->setColumnCount(3);
         tableWidget->setHorizontalHeaderLabels({"排名", "玩家名称", "得分"});
     }
-    
-    for (int i = 0; i < data.size(); ++i) {
-        tableWidget->insertRow(i);
-        
-        // 排名
-        QTableWidgetItem *rankItem = new QTableWidgetItem(QString::number(i + 1));
-        rankItem->setTextAlignment(Qt::AlignCenter);
-        
-        // 用户名/玩家名称
-        QTableWidgetItem *nameItem = new QTableWidgetItem(data[i].playerName);
-        
-        // 日期 (仅个人历史记录显示)
-        QTableWidgetItem *dateItem = nullptr;
-        if (currentType == PERSONAL_HISTORY) {
-            dateItem = new QTableWidgetItem(data[i].date);
-        }
-        
-        // 分数
-        QTableWidgetItem *scoreItem = new QTableWidgetItem(QString::number(data[i].score));
-        scoreItem->setTextAlignment(Qt::AlignCenter);
-        
-        // 设置前三名的颜色
-        if (i == 0) {
-            rankItem->setForeground(QColor("#FF9800"));  // 金色
-            rankItem->setFont(QFont("微软雅黑", 10, QFont::Bold));
-        } else if (i == 1) {
-            rankItem->setForeground(QColor("#9E9E9E"));  // 银色
-            rankItem->setFont(QFont("微软雅黑", 10, QFont::Bold));
-        } else if (i == 2) {
-            rankItem->setForeground(QColor("#CD7F32"));  // 铜色
-            rankItem->setFont(QFont("微软雅黑", 10, QFont::Bold));
-        }
-        
-        tableWidget->setItem(i, 0, rankItem);
-        tableWidget->setItem(i, 1, nameItem);
-        
-        if (currentType == PERSONAL_HISTORY) {
-            tableWidget->setItem(i, 2, dateItem);
-            tableWidget->setItem(i, 3, scoreItem);
-        } else {
-            tableWidget->setItem(i, 2, scoreItem);
+
+    if (data.size() == 0) {
+        tableWidget->insertRow(0);
+        QTableWidgetItem *noDataItem = new QTableWidgetItem("暂无数据");
+        noDataItem->setTextAlignment(Qt::AlignCenter);
+        noDataItem->setFlags(Qt::ItemIsEnabled); // 禁止选择
+
+        // 合并单元格以居中显示提示
+        tableWidget->setSpan(0, 0, 1, tableWidget->columnCount());
+        tableWidget->setItem(0, 0, noDataItem);
+    } else {
+        for (int i = 0; i < data.size(); ++i) {
+            tableWidget->insertRow(i);
+
+            // 排名
+            QTableWidgetItem *rankItem = new QTableWidgetItem(QString::number(i + 1));
+            rankItem->setTextAlignment(Qt::AlignCenter);
+
+            // 用户名/玩家名称
+            QTableWidgetItem *nameItem = new QTableWidgetItem(data[i].playerName);
+            nameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
+            // 日期 (仅个人历史记录显示)
+            QTableWidgetItem *dateItem = nullptr;
+            if (currentType == PERSONAL_HISTORY) {
+                dateItem = new QTableWidgetItem(data[i].date);
+                dateItem->setTextAlignment(Qt::AlignCenter);
+            }
+
+            // 分数
+            QTableWidgetItem *scoreItem = new QTableWidgetItem(QString::number(data[i].score));
+            scoreItem->setTextAlignment(Qt::AlignCenter);
+
+            scoreItem->setFont(QFont("微软雅黑", 10, QFont::Bold));
+
+            // 设置前三名的特殊样式
+            if (i < 3) {
+                QString backgroundColor, textColor;
+                QString rankSymbol;
+
+                if (i == 0) {
+                    // 第一名 - 金色风格
+                    backgroundColor = "#FFF9C4";
+                    textColor = "#FF6F00";
+                    rankSymbol = "🏆 ";
+                    rankItem->setFont(QFont("微软雅黑", 11, QFont::Bold));
+                    scoreItem->setFont(QFont("微软雅黑", 11, QFont::Bold));
+                } else if (i == 1) {
+                    // 第二名 - 银色风格
+                    backgroundColor = "#F5F5F5";
+                    textColor = "#757575";
+                    rankSymbol = "🥈 ";
+                    rankItem->setFont(QFont("微软雅黑", 10, QFont::Bold));
+                } else if (i == 2) {
+                    // 第三名 - 铜色风格
+                    backgroundColor = "#FFE0B2";
+                    textColor = "#8D6E63";
+                    rankSymbol = "🥉 ";
+                    rankItem->setFont(QFont("微软雅黑", 10, QFont::Bold));
+                }
+
+                // 设置排名单元格样式
+                rankItem->setText(rankSymbol + QString::number(i + 1));
+                rankItem->setForeground(QColor(textColor));
+
+                // 设置整行背景颜色
+                rankItem->setBackground(QColor(backgroundColor));
+                nameItem->setBackground(QColor(backgroundColor));
+                scoreItem->setBackground(QColor(backgroundColor));
+                scoreItem->setForeground(QColor(textColor));
+
+                if (dateItem) {
+                    dateItem->setBackground(QColor(backgroundColor));
+                }
+            }
+
+            tableWidget->setItem(i, 0, rankItem);
+            tableWidget->setItem(i, 1, nameItem);
+
+            if (currentType == PERSONAL_HISTORY) {
+                tableWidget->setItem(i, 2, dateItem);
+                tableWidget->setItem(i, 3, scoreItem);
+            } else {
+                tableWidget->setItem(i, 2, scoreItem);
+            }
         }
     }
+
 }
 
 void ScoreTable::keyPressEvent(QKeyEvent *event)
