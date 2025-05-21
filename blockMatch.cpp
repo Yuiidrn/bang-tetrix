@@ -82,9 +82,15 @@ int GameWidget::BlockCheck()
         return match_count + BlockCheck();  //递归调用（1 + 1 +...+ 0）
     //之前逻辑有误，应该是直到最后没有匹配块时才继续下落和操作！！
     else {
-        // 继续游戏（启用键盘和鼠标事件）
-        this->removeEventFilter(this);
-        gameTimer->start(); //继续下落计时器
+        // 未做到极限消除，补回GameOver状态
+        if(game_area[iniPos_y][iniPos_x].is_stable) {
+            isGameOver = true;
+        }
+        // 出口未堵，继续游戏（启用键盘和鼠标事件）
+        else {
+            this->removeEventFilter(this);
+            gameTimer->start(); //继续下落计时器
+        }
         return 0;
     }
 }

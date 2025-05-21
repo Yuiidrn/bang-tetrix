@@ -32,18 +32,26 @@ void GameWidget::BlockTranslate(Direction key_dir)
     case DOWN:
         //人物块(包括头或腿)到达边界则不再移动（**触底判定要更改为根据实时坐标判定，否则会被提前吸附）
         //new：根据实时y坐标增加，并确定当前pos_y以用于碰撞检测
-        //碰撞检测，只计算上下左右边界，先尝试走一格，如果碰撞则稳定方块后跳出
+        //碰撞检测，只计算上下左右边界，如果碰撞则稳定方块后跳出
         if(IsCollide(cur_block, DOWN))
         {
-            // 只有游戏未结束状态下才进行方块稳定和匹配检查
-            if (!isGameOver) 
-            {
-                //只有最终不能下落才转成稳定方块(腿块和头块要统一！)
-                ConvertStable(h_bck.pos_x, h_bck.pos_y, cur_block);
-                landEffect->play(); //播放落地音效
+            // 播放落地音效
+            landEffect->play();
 
+            // 只有最终不能下落才转成稳定方块(腿块和头块要统一！)
+            ConvertStable(h_bck.pos_x, h_bck.pos_y, cur_block);
+
+            if (!isGameOver) // 腿未出限第一重判定
+            {
                 match_count = BlockCheck();
-                ResetBlock();
+                // 无极限消除第二重判定
+                if (!isGameOver) { // 只有游戏真正未结束状态下才reset
+                    ResetBlock();
+                } else {
+                    GameOver();
+                }
+            } else {
+                GameOver();
             }
             break;
         }
@@ -72,15 +80,21 @@ void GameWidget::BlockTranslate(Direction key_dir)
             cur_block.y += fallingHeight;
             cur_block.bp.pos_y = qFloor(cur_block.y / BLOCK_SIZE * 1.0);
         }
-        
-        // 只有游戏未结束状态下才进行方块稳定和匹配检查
-        if (!isGameOver) 
-        {
-            ConvertStable(cur_block.bp.pos_x, cur_block.bp.pos_y, cur_block);
-            landEffect->play();
 
+        landEffect->play();
+        ConvertStable(cur_block.bp.pos_x, cur_block.bp.pos_y, cur_block);
+
+        if (!isGameOver) //腿未出限第一重判定
+        {
             match_count = BlockCheck();
-            ResetBlock();
+            // 无极限消除第二重判定
+            if (!isGameOver) { // 只有游戏真正未结束状态下才reset
+                ResetBlock();
+            } else {
+                GameOver();
+            }
+        } else {
+            GameOver();
         }
         break;
     default:

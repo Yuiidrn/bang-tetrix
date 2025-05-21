@@ -1,6 +1,6 @@
 #include "game.h"
 #include "ui_widget.h"
-#include "GameOverDialog.h"
+#include "gameoverdialog.h"
 #include <QFile>
 
 GameWidget::GameWidget(QWidget *parent)
@@ -144,9 +144,6 @@ void GameWidget::StartGame()
 }
 void GameWidget::GameOver()
 {
-    // 设置游戏结束标志
-    isGameOver = true;
-
     gameTimer->stop();
     refreshTimer->stop();
     

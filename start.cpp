@@ -1,7 +1,7 @@
 #include "start.h"
 #include "game.h"
 #include "ui_start.h"
-#include "GameOverDialog.h"
+#include "gameoverdialog.h"
 #include <QApplication>
 #include <QScreen>
 #include <QDateTime>

@@ -10,11 +10,11 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    GameOverDialog.cpp \
     blockLogic.cpp \
     blockMatch.cpp \
     blockMove.cpp \
     game.cpp \
+    gameoverdialog.cpp \
     main.cpp \
     scoreTable/scoreinputdialog.cpp \
     scoreTable/scoremanager.cpp \
@@ -22,10 +22,10 @@ SOURCES += \
     start.cpp
 
 HEADERS += \
-    GameOverDialog.h \
     backgroundInfo.h \
     blockInfo.h \
     game.h \
+    gameoverdialog.h \
     scoreTable/scoreinputdialog.h \
     scoreTable/scoremanager.h \
     scoreTable/scoretable.h \

@@ -103,27 +103,32 @@ void GameWidget::ResetBlock()
 //转化为稳定块(同时判断游戏是否结束)
 void GameWidget::ConvertStable(int x, int pos_y, Block_info &cpy_Block)
 {
-    //头部
+    //先将头部转为稳定块看是否能"极限消除"
     block_cpy(game_area[pos_y][x], cpy_Block);
     game_area[pos_y][x].is_stable = 1;
 
     if(game_area[pos_y][x].belong != Item) {
         //腿部
         int leg_i = pos_y + di[game_area[pos_y][x].dir], leg_j = x + dj[game_area[pos_y][x].dir];
-        // 优先判断游戏是否结束，避免腿块下标i为-1而造成访问越界，同时改逻辑为窗口外第“0”行出现腿块才结束
-        //（无非两种情况：头出或腿出，而开始生成的话头块以固定为第一行，结合现实不太可能会有头出的情况，因此需格外排除腿出的情况）
+        // 优先判断游戏是否结束，，同时改逻辑为窗口外第“0”行出现腿块才结束
+        //（无非两种情况：头出或腿出，而开始生成的话头块以固定为第一行，结合现实“不太可能会有头出(还真是)”的情况，因此需格外排除腿出的情况）
 
-        //出口顶端也有稳定方块且存在腿部出界
-        if(game_area[iniPos_y][iniPos_x].is_stable ) // || (game_area[iniPos_y][x].is_stable && game_area[iniPos_y][x].dir == 2)
+        //出口顶端已有稳定方块——先看能否“极限消除”
+        if(game_area[iniPos_y][iniPos_x].is_stable) { return; }
+        // 存在腿部出界，无需检测直接判输，避免腿块下标i为-1而造成访问越界
+        else if(game_area[iniPos_y][x].is_stable && game_area[iniPos_y][x].dir == 2)
         {
-            GameOver();
+            // GameOver(); 不能直接就在这调用gameover()，避免重复结算问题
+            isGameOver = true;
+            return;
         }
-        else
-        {
+        //正常结算
+        else {
             block_cpy(game_area[leg_i][leg_j], game_area[pos_y][x]); //拷贝头部块信息
             //！！注意个别值的更新！！
             game_area[leg_i][leg_j].bp = {leg_j, leg_i}; //坐标位置更新！
             game_area[leg_i][leg_j].is_head = 0;         //撤销腿部头部块识别！
+            return;
         }
     }
 }
