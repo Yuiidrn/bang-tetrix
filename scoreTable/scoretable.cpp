@@ -414,7 +414,6 @@ void ScoreTable::updateTableDisplay()
 void ScoreTable::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape) {
-        emit closed();
         hide();
     } else {
         QWidget::keyPressEvent(event);

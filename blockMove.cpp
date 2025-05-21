@@ -11,6 +11,11 @@ void GameWidget::BlockRotate(Block_info &head_block)
 //平移
 void GameWidget::BlockTranslate(Direction key_dir)
 {
+    // 如果游戏已结束，不处理任何方块移动
+    if (isGameOver) {
+        return;
+    }
+    
     //整体逻辑是以判头块为主！头块为实体而腿块为虚体仅作碰撞判断用，即确定好头块位置前就预留有放腿块的空间
     block_point h_bck = cur_block.bp, l_bck = h_bck;
     l_bck.pos_x += dj[cur_block.dir]; l_bck.pos_y += di[cur_block.dir]; //pos —— 下落层格数
@@ -30,12 +35,16 @@ void GameWidget::BlockTranslate(Direction key_dir)
         //碰撞检测，只计算上下左右边界，先尝试走一格，如果碰撞则稳定方块后跳出
         if(IsCollide(cur_block, DOWN))
         {
-            //只有最终不能下落才转成稳定方块(腿块和头块要统一！)
-            ConvertStable(h_bck.pos_x, h_bck.pos_y, cur_block);
-            landEffect->play(); //播放落地音效
+            // 只有游戏未结束状态下才进行方块稳定和匹配检查
+            if (!isGameOver) 
+            {
+                //只有最终不能下落才转成稳定方块(腿块和头块要统一！)
+                ConvertStable(h_bck.pos_x, h_bck.pos_y, cur_block);
+                landEffect->play(); //播放落地音效
 
-            match_count = BlockCheck();
-            ResetBlock();
+                match_count = BlockCheck();
+                ResetBlock();
+            }
             break;
         }
         cur_block.y += fallingHeight;
@@ -63,11 +72,16 @@ void GameWidget::BlockTranslate(Direction key_dir)
             cur_block.y += fallingHeight;
             cur_block.bp.pos_y = qFloor(cur_block.y / BLOCK_SIZE * 1.0);
         }
-        ConvertStable(cur_block.bp.pos_x, cur_block.bp.pos_y, cur_block);
-        landEffect->play();
+        
+        // 只有游戏未结束状态下才进行方块稳定和匹配检查
+        if (!isGameOver) 
+        {
+            ConvertStable(cur_block.bp.pos_x, cur_block.bp.pos_y, cur_block);
+            landEffect->play();
 
-        match_count = BlockCheck();
-        ResetBlock();
+            match_count = BlockCheck();
+            ResetBlock();
+        }
         break;
     default:
         break;

@@ -59,8 +59,23 @@ void GameWidget::initMenu(Start *menu){ this->menu = menu; }
 void GameWidget::goToMainMenu(){ this->hide(); menu->show(); }
 void GameWidget::InitGame()
 {
+    //乐队背景音设置
+    cur_bandMP = new QMediaPlayer(this);          //创建实例！！
+    auto audioOutput = new QAudioOutput(this);    //配置*音频输出设备*
+    cur_bandMP->setAudioOutput(audioOutput);
+    connect(cur_bandMP, &QMediaPlayer::durationChanged, this, [=](){ //建立加载完毕自动获取时长链接
+        m_MPdur = cur_bandMP->duration();
+        // qDebug() << m_MPdur;
+    });
+
+    //音效预加载
+    landEffect = new QSoundEffect();
+    moveEffect = new QSoundEffect();
+    landEffect->setSource(QUrl("qrc:/sounds/sound/land.wav")); landEffect->setVolume(1);
+    moveEffect->setSource(QUrl("qrc:/sounds/sound/move.wav")); moveEffect->setVolume(0.2);
     ini_block = Block_info();  //空块，重置赋零值用
     iniPos_x = 4, iniPos_y = 0;  //设置生成位置坐标
+
     //清空场景
     for(int i = 0; i < AREA_ROW; i++)
         for(int j = 0; j < AREA_COL; j++)
@@ -82,37 +97,11 @@ void GameWidget::InitGame()
     connect(this, MarinaAnimation0, this, playStartMA0);
     Marina = new QLabel(this);
 
-    //乐队背景音设置
-    cur_bandMP = new QMediaPlayer(this);          //创建实例！！
-    auto audioOutput = new QAudioOutput(this);    //配置*音频输出设备*
-    cur_bandMP->setAudioOutput(audioOutput);
-    connect(cur_bandMP, &QMediaPlayer::durationChanged, this, [=](){ //建立加载完毕自动获取时长链接
-        m_MPdur = cur_bandMP->duration();
-        // qDebug() << m_MPdur;
-    });
-
-    //音效预加载
-    landEffect = new QSoundEffect();
-    moveEffect = new QSoundEffect();
-    landEffect->setSource(QUrl("qrc:/sounds/sound/land.wav")); landEffect->setVolume(1);
-    moveEffect->setSource(QUrl("qrc:/sounds/sound/move.wav")); moveEffect->setVolume(0.2);
-
     //设置初始下落延迟速度和刷新率
     speed_ms = 25;
     fallingHeight = 5;
     refresh_ms = 16;     //1000ms / 60FPS = 16.67; 1000ms / 165FPS = 6.06
 
-    //初始化随机数种子
-    srand(time(0));
-    //分数清0
-    score=0;
-    MaxCombo=0;
-    //开始游戏
-    StartGame();
-    landEffect->play();
-}
-void GameWidget::StartGame()
-{
     //改用定义实例计时器进行操作(方便后续的音效暂停)
     gameTimer = new QTimer(this);
     gameTimer->setInterval(speed_ms);
@@ -128,44 +117,47 @@ void GameWidget::StartGame()
     //麻里奈动画
     connect(Mtimer, SIGNAL(timeout()), this, SLOT(onMTimeOut()));
 
+    //初始化随机数种子
+    srand(time(0));
+    //分数清0
+    score=0;
+    MaxCombo=0;
+    //开始游戏
+    StartGame();
+    landEffect->play();
+}
+
+void GameWidget::StartGame()
+{
+    // 重置游戏结束标志
+    isGameOver = false;
+
     //产生初始下一个方块
     CreateBlock(next_block);
     ResetBlock(); //产生方块
 
+    // 确保移除了事件过滤器，使游戏可以接收键盘输入
+    this->removeEventFilter(this);
+
     gameTimer->start();
     refreshTimer->start();
-    // this->removeEventFilter(this);
 }
 void GameWidget::GameOver()
 {
+    // 设置游戏结束标志
+    isGameOver = true;
+
     gameTimer->stop();
     refreshTimer->stop();
-    // this->installEventFilter(this);
+    
+    // 安装事件过滤器，屏蔽所有用户输入
+    this->installEventFilter(this);
+    
+    // 清空可能存在的事件队列
+    QCoreApplication::processEvents();
 
-    // 录入分数
+    // 录入分数（内置跳出游戏结束结算框）
     menu->scoreRecord(score, MaxCombo);
-
-    // 创建游戏结束对话框
-    GameOverDialog dialog(this);
-    
-    // 设置背景图片（如果存在）
-    if (QFile(":/imgs/img/ui/inputbg.jpg").exists()) {
-        dialog.setBackgroundImage(":/imgs/img/ui/inputbg.jpg");
-    }
-    
-    // 显示对话框并等待用户选择
-    dialog.exec();
-    
-    // 处理用户选择的按钮
-    GameOverDialog::GameOverResult result = dialog.getResult();
-    
-    if (result == GameOverDialog::Restart) {
-        InitGame();     // 调用重新开始游戏的方法
-    } else if (result == GameOverDialog::MainMenu) {
-        goToMainMenu();  // 调用返回主菜单的方法
-    } else {
-        // QApplication::quit();  // 退出游戏
-    }
 }
 
 void GameWidget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数！也可用原窗口上定义图形类并set的方式
@@ -271,6 +263,12 @@ void GameWidget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数
 }
 void GameWidget::keyPressEvent(QKeyEvent *event)
 {
+    // 如果游戏已结束，不处理任何键盘事件
+    if (isGameOver) {
+        event->ignore();
+        return;
+    }
+    
     switch(event->key())
     {
     case Qt::Key_Up:
@@ -315,6 +313,7 @@ bool GameWidget::eventFilter(QObject *watched, QEvent *event)
            }
            return false;
     }
+    return false; // 确保明确返回false
 }
 
 GameWidget::~GameWidget() { delete ui; }

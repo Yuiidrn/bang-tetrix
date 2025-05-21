@@ -1,16 +1,19 @@
 #include "start.h"
 #include "game.h"
 #include "ui_start.h"
+#include "GameOverDialog.h"
 #include <QApplication>
 #include <QScreen>
 #include <QDateTime>
 #include <QDir>
+#include <QFile>
 
 Start::Start(QWidget *parent) :
     QWidget(parent)
     , ui(new Ui::Start)
     , scoreTable(nullptr)
     , scoreManager(nullptr)
+    , shouldShowGameOver(false)
 {
     ui->setupUi(this);
     int defaultWidth = 1200, defaultHeight = 675;
@@ -47,6 +50,7 @@ Start::Start(QWidget *parent) :
 
     // 连接排行榜关闭信号
     connect(scoreTable, &ScoreTable::typeChanged, this, &Start::onScoreTableTypeChanged);
+    connect(scoreTable, &ScoreTable::closed, this, &Start::onScoreTableClosed);
 
     // 尝试与服务器同步
     // 设置服务器URL (可以根据需要修改)
@@ -102,6 +106,8 @@ void Start::showScoreTable()
 
         // 连接类型变化信号
         connect(scoreTable, &ScoreTable::typeChanged, this, &Start::onScoreTableTypeChanged);
+        // 连接关闭信号
+        connect(scoreTable, &ScoreTable::closed, this, &Start::onScoreTableClosed);
     }
 
     // 居中显示在主界面上
@@ -140,8 +146,9 @@ void Start::scoreRecord(int end_score, int end_combo)
     // 显示分数结算对话框并获取玩家名称，若是新高记录则提示用户
     QString playerName = getPlayerNameInput(score, combo, isNewRecord);
 
-    // 如果玩家取消输入，不添加成绩
+    // 如果玩家取消输入，不添加成绩，并直接显示游戏结束界面
     if (playerName.isEmpty()) {
+        showGameOverDialog();
         return;
     }
 
@@ -155,7 +162,10 @@ void Start::scoreRecord(int end_score, int end_combo)
     // 重新加载积分数据到表格
     loadScoreData();
 
-    // 自动显示排行榜
+    // 设置标记，表示排行榜关闭后需要显示游戏结束界面
+    shouldShowGameOver = true;
+    
+    // 显示排行榜
     showScoreTable();
 }
 
@@ -236,6 +246,42 @@ void Start::onScoreUploadCompleted(bool success)
         // 可以添加UI反馈，比如状态栏消息等
     } else {
         qDebug() << "分数上传失败";
+    }
+}
+
+// 添加排行榜关闭的槽函数
+void Start::onScoreTableClosed()
+{
+    // 如果需要显示游戏结束界面
+    if (shouldShowGameOver) {
+        shouldShowGameOver = false;  // 重置标记
+        showGameOverDialog();        // 显示游戏结束界面
+    }
+}
+
+// 显示游戏结束界面
+void Start::showGameOverDialog()
+{
+    // 创建游戏结束对话框
+    GameOverDialog dialog(this);
+    
+    // 设置背景图片（如果存在）
+    if (QFile(":/imgs/img/ui/inputbg.jpg").exists()) {
+        dialog.setBackgroundImage(":/imgs/img/ui/inputbg.jpg");
+    }
+    
+    // 显示对话框并等待用户选择
+    dialog.exec();
+    
+    // 处理用户选择的按钮
+    GameOverDialog::GameOverResult result = dialog.getResult();
+    
+    if (result == GameOverDialog::Restart) {
+        game->InitGame();     // 调用重新开始游戏的方法
+    } else if (result == GameOverDialog::MainMenu) {
+        game->goToMainMenu();  // 调用返回主菜单的方法
+    } else {
+        QApplication::quit();  // 退出游戏
     }
 }
 

@@ -31,12 +31,18 @@ public:
 
 public slots:
     void scoreRecord(int end_score, int end_combo);
+    
+    // 显示游戏结束界面
+    void showGameOverDialog();
 
 private slots:
     void switchToGame();
 
     void on_showScoreTableButton_clicked();
     void onScoreTableTypeChanged(ScoreTableType newType);
+    
+    // 处理排行榜关闭的槽函数
+    void onScoreTableClosed();
 
     // 新增网络相关槽函数
     void onWorldRankingsUpdated();
@@ -48,6 +54,9 @@ private:
     Ui::Start *ui;
     ScoreTable *scoreTable;
     ScoreManager *scoreManager;
+    
+    // 标记是否需要显示游戏结束界面
+    bool shouldShowGameOver;
 
     // 显示排行榜
     void showScoreTable();

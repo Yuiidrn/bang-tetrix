@@ -117,5 +117,8 @@ private:
     QVector<QPixmap> Marinas;   // 存储多张图片
     int currentIndex;           // 当前显示的图片索引
     QTimer *Mtimer;             // 定时器用于切换图片
+    
+    // 游戏状态标志
+    bool isGameOver;
 };
 #endif // GAME_H
