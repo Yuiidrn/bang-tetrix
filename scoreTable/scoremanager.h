@@ -57,12 +57,16 @@ public:
     // 获取客户端ID
     QString getClientId() const;
 
+    // 检查服务器连接
+    void checkServerConnection();
+
 signals:
     // 新增信号
     void worldRankingsUpdated();
     void syncCompleted(bool success);
     void scoreUploadCompleted(bool success);
     void networkError(const QString &errorMessage);
+    void serverConnectionStatusChanged(bool isConnected, const QString &message);
 
 private:
     QList<GameScore> personalScores;    // 个人历史记录

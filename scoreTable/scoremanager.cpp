@@ -14,8 +14,8 @@ ScoreManager::ScoreManager(QObject *parent)
     // 初始化网络管理器
     networkManager = new QNetworkAccessManager(this);
     
-    // 设置默认服务器URL
-    serverUrl = "http://localhost:3000/api/scores";
+    // 设置默认服务器URL(真正是在start里面改！)
+    serverUrl = "-1";
     
     // 加载或生成客户端ID
     loadClientId();
@@ -444,3 +444,21 @@ void ScoreManager::processSyncReply(QNetworkReply *reply)
     
     emit syncCompleted(true);
 } 
+
+// 在scoremanager.cpp中添加检查方法
+void ScoreManager::checkServerConnection()
+{
+    QNetworkRequest request(QUrl(serverUrl + "/status"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = networkManager->get(request);
+
+    connect(reply, &QNetworkReply::finished, [this, reply]() {
+        if (reply->error() == QNetworkReply::NoError) {
+            emit serverConnectionStatusChanged(true, "服务器连接正常");
+        } else {
+            emit serverConnectionStatusChanged(false, "无法连接到服务器: " + reply->errorString());
+        }
+        reply->deleteLater();
+    });
+}

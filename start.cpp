@@ -54,7 +54,7 @@ Start::Start(QWidget *parent) :
 
     // 尝试与服务器同步
     // 设置服务器URL (可以根据需要修改)
-    scoreManager->setServerUrl("http://localhost:3000/api/scores");
+    scoreManager->setServerUrl("http://8.138.243.128:3000/api/scores");
     scoreManager->syncWithServer();
 }
 Start::~Start(){     // 保存积分数据

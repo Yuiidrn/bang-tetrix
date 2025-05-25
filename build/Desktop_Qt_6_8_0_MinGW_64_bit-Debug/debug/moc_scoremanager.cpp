@@ -44,7 +44,10 @@ constexpr auto qt_meta_stringdata_CLASSScoreManagerENDCLASS = QtMocHelpers::stri
     "success",
     "scoreUploadCompleted",
     "networkError",
-    "errorMessage"
+    "errorMessage",
+    "serverConnectionStatusChanged",
+    "isConnected",
+    "message"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -57,24 +60,26 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSScoreManagerENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       4,       // signalCount
+       5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   38,    2, 0x06,    1 /* Public */,
-       3,    1,   39,    2, 0x06,    2 /* Public */,
-       5,    1,   42,    2, 0x06,    4 /* Public */,
-       6,    1,   45,    2, 0x06,    6 /* Public */,
+       1,    0,   44,    2, 0x06,    1 /* Public */,
+       3,    1,   45,    2, 0x06,    2 /* Public */,
+       5,    1,   48,    2, 0x06,    4 /* Public */,
+       6,    1,   51,    2, 0x06,    6 /* Public */,
+       8,    2,   54,    2, 0x06,    8 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
     QMetaType::Void, QMetaType::Bool,    4,
     QMetaType::Void, QMetaType::Bool,    4,
     QMetaType::Void, QMetaType::QString,    7,
+    QMetaType::Void, QMetaType::Bool, QMetaType::QString,    9,   10,
 
        0        // eod
 };
@@ -98,6 +103,10 @@ Q_CONSTINIT const QMetaObject ScoreManager::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         // method 'networkError'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
+        // method 'serverConnectionStatusChanged'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>
     >,
     nullptr
@@ -113,6 +122,7 @@ void ScoreManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 1: _t->syncCompleted((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
         case 2: _t->scoreUploadCompleted((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
         case 3: _t->networkError((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 4: _t->serverConnectionStatusChanged((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -145,6 +155,13 @@ void ScoreManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
                 return;
             }
         }
+        {
+            using _t = void (ScoreManager::*)(bool , const QString & );
+            if (_t _q_method = &ScoreManager::serverConnectionStatusChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 4;
+                return;
+            }
+        }
     }
 }
 
@@ -167,13 +184,13 @@ int ScoreManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
+        if (_id < 5)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 4;
+        _id -= 5;
     }
     return _id;
 }
@@ -203,5 +220,12 @@ void ScoreManager::networkError(const QString & _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 3, _a);
+}
+
+// SIGNAL 4
+void ScoreManager::serverConnectionStatusChanged(bool _t1, const QString & _t2)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))) };
+    QMetaObject::activate(this, &staticMetaObject, 4, _a);
 }
 QT_WARNING_POP
