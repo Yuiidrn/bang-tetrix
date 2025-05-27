@@ -12,7 +12,7 @@ inline void Sleep(unsigned int msec){
 
 /*场景消除逻辑*/
 int vis[AREA_ROW][AREA_COL] = {0};
-QVector<Block_info> v; //用来存相消块
+QList<Block_info> tblocks; //暂存匹配块
 //递归检查消除
 int GameWidget::BlockCheck()
 {
@@ -27,7 +27,7 @@ int GameWidget::BlockCheck()
                 QQueue<Block_info> q;  //BFS搜索队列
                 int cur_charNum = 0;   //用来记录目前匹对人数
 
-                v.clear();
+                tblocks.clear();
 
                 Block_info tBlock = game_area[i][j];
                 Band_name cur_blng = tBlock.belong;
@@ -39,7 +39,7 @@ int GameWidget::BlockCheck()
                 //BFS开始
                 while(q.size()) {
                     block_point tp = q.front().bp;
-                    v.push_back(q.front());
+                    tblocks.push_back(q.front());
                     if(q.front().belong != Item)
                         cur_charNum++;
                     q.pop_front();
@@ -66,11 +66,15 @@ int GameWidget::BlockCheck()
                     charRest[(int)cur_blng] = ini_set;   //乐队成员全部回入
                     bandRest.insert((int)cur_blng);      //相应匹配乐队编号回入剩余集合中
                     cur_bandMP->play();
+
+                    applyEffectToBlocks(tblocks);
+
                     gameTimer->stop();
 
                     this->installEventFilter(this);     //窗口对自己安装一个事件过滤器，屏蔽对界面的所有输入 实现暂停
-                    Sleep(m_MPdur + 100);   //只有QMediaPlayer能获取时长
-                    onPlayingChanged();     //必须保证onPlayingChanged调用后清除匹配块，避免二次进入
+                    Sleep(m_MPdur + 1600);   //只有QMediaPlayer能获取时长
+                    BlockGravity();         //必须保证重力机制调用后清除匹配块，避免二次进入
+
                 } else { //还原万能块vis信息
                     for(auto &p : Items)
                         vis[p.first][p.second] = 0;
@@ -95,11 +99,68 @@ int GameWidget::BlockCheck()
     }
 }
 
-//收尾
-void GameWidget::onPlayingChanged(){
+QPixmap GameWidget::createWhiteOutlineImage(const QPixmap &original)
+{
+    if (original.isNull()) {
+        return QPixmap();
+    }
+
+    // 创建一个与原图相同大小的图像
+    QPixmap whiteImage(original.size());
+    whiteImage.fill(Qt::transparent);
+
+    // 在新图像上绘制
+    QPainter painter(&whiteImage);
+
+    // 绘制原始图像
+    painter.drawPixmap(0, 0, original);
+
+    // 设置复合模式为叠加
+    painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+
+    // 填充白色
+    painter.fillRect(original.rect(), Qt::white);
+
+    painter.end();
+
+    return whiteImage;
+}
+
+// 消块特效
+void GameWidget::applyEffectToBlocks(QList<Block_info> blocks)
+{
+    // 标记所有方块需要应用特效
+    for (Block_info block : blocks) {
+        block.is_whiteBright = true;
+        block.is_fadeEffect = true;
+    }
+
+    // 更新显示
+    update();
+
+    // 设置计时器在短暂显示全白图像后启动淡出效果
+    QTimer::singleShot(300, this, [this, blocks]() {
+        // 切换回正常图像但保持特效状态
+        for (Block_info block : blocks) {
+            if(block.is_head) //只有头块运用
+                block.is_whiteBright = false;
+        }
+        currentOpacity = 1.0;
+        update();
+
+        // 开始淡出动画
+        fadeAnimation->setStartValue(1.0);
+        fadeAnimation->setEndValue(0.0);
+        fadeAnimation->start();
+
+    });
+}
+
+// 重力机制
+void GameWidget::BlockGravity(){
     //场景预刷新操作
     memset(vis, 0, sizeof(vis));                         //vis重置
-    for(Block_info &tb : v)
+    for(Block_info &tb : tblocks)
         game_area[tb.bp.pos_y][tb.bp.pos_x] = ini_block; //清空匹配连通块
     cur_block = ini_block; //包括cur_block
 
