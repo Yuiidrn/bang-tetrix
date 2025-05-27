@@ -8,7 +8,7 @@ using namespace std;
 /*----乐队添加----*/
 const int BAND_NUM = 9; //乐队个数
 const int CHAR_NUM = 5; //成员个数
-const int SET_NUM = 1;  //设置仅前n个乐队，debug用
+const int SET_NUM = 3;  //设置仅前n个乐队
 const QString bandList[BAND_NUM] = {
     "Poppin_Party",   //0 万物起源
     "Afterglow",

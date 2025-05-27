@@ -106,7 +106,10 @@ void GameWidget::InitGame()
     fadeAnimation->setEasingCurve(QEasingCurve::OutCubic);
 
     // 连接valueChanged信号到我们的槽函数
-    // connect(fadeAnimation, &QVariantAnimation::valueChanged, this, &GameWidget::updateOpacity);
+    connect(fadeAnimation, &QVariantAnimation::valueChanged, this, [this](const QVariant &value) {
+        currentOpacity = value.toReal();
+        update(); // 触发重绘
+    });
 
     // 创建计时器用于延迟开始淡出效果
     brightnessTimer = new QTimer(this);
@@ -198,13 +201,14 @@ void GameWidget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数
     color.setRgb(206, 37, 122);
     painter.setPen(color);
     painter.setFont(QFont("华文彩云",40));
-    painter.drawText(QRect(AREA_COL*BLOCK_SIZE + 1.5*lMARGIN, 3.3*uMARGIN, 100, 100),Qt::AlignCenter,QString::number(score));
+    //QRect(pos_x, pos_y, length, width)
+    painter.drawText(QRect(AREA_COL*BLOCK_SIZE + 1.5*lMARGIN, 3.3*uMARGIN, 100, 100), Qt::AlignCenter, QString::number(score));
     //绘制最大连击数
     color.setRgb(71, 71, 71);
     painter.setPen(color);
     painter.setFont(QFont("华文琥珀",35));
     uOff = 3 * scaleUi;
-    painter.drawText(QRect(AREA_COL*BLOCK_SIZE + 1.7*lMARGIN-uOff, 4.16*uMARGIN, 100, 100),Qt::AlignCenter,QString::number(MaxCombo));
+    painter.drawText(QRect(AREA_COL*BLOCK_SIZE + 1.7*lMARGIN-uOff, 4.16*uMARGIN, 100, 100), Qt::AlignCenter, QString::number(MaxCombo));
 
     /* 绘制当前块(要实现平滑下落必须得单拎出来绘制：cur_block) */
     // 注意**消块处理过程**中cur_block置空不绘制出来！
@@ -278,7 +282,9 @@ void GameWidget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数
                 default:
                     break;
                 }
-                painter.rotate(90*game_area[i][j].dir);     //旋转后再次根据具体图宽调整printPoint
+                //旋转后再次根据具体图宽调整printPoint
+                painter.rotate(90*game_area[i][j].dir);
+                //实际绘图位置（带上全白及渐隐特效）
                 painter.drawPixmap(QRect(0, 0, Half_scalingImgWidth*2, game_area[i][j].belong != Item ? BLOCK_SIZE*2 : BLOCK_SIZE), tImg);
 
                 painter.restore();

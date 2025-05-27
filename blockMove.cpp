@@ -100,6 +100,7 @@ void GameWidget::BlockTranslate(Direction key_dir)
     default:
         break;
     }
+    // 分数计算（策划的一环）
     if(match_count){
         MaxCombo = max(MaxCombo, match_count);
         score += (int)pow(10, match_count); //得分（连击奖励设置）

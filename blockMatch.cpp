@@ -67,12 +67,13 @@ int GameWidget::BlockCheck()
                     bandRest.insert((int)cur_blng);      //相应匹配乐队编号回入剩余集合中
                     cur_bandMP->play();
 
+                    cur_block = ini_block; // 清空当前块，避免重绘过程上一活动块实体覆盖稳定块渐隐特效
                     applyEffectToBlocks(tblocks);
 
                     gameTimer->stop();
 
                     this->installEventFilter(this);     //窗口对自己安装一个事件过滤器，屏蔽对界面的所有输入 实现暂停
-                    Sleep(m_MPdur + 1600);   //只有QMediaPlayer能获取时长
+                    Sleep(m_MPdur + 100);   //只有QMediaPlayer能获取时长
                     BlockGravity();         //必须保证重力机制调用后清除匹配块，避免二次进入
 
                 } else { //还原万能块vis信息
@@ -130,9 +131,12 @@ QPixmap GameWidget::createWhiteOutlineImage(const QPixmap &original)
 void GameWidget::applyEffectToBlocks(QList<Block_info> blocks)
 {
     // 标记所有方块需要应用特效
-    for (Block_info block : blocks) {
-        block.is_whiteBright = true;
-        block.is_fadeEffect = true;
+    for (const Block_info &block : blocks) {
+        // 修改game_area数组中的块，而不是局部变量
+        if (block.is_head && block.is_stable) {
+            game_area[block.bp.pos_y][block.bp.pos_x].is_whiteBright = true;
+            game_area[block.bp.pos_y][block.bp.pos_x].is_fadeEffect = true;
+        }
     }
 
     // 更新显示
@@ -141,9 +145,10 @@ void GameWidget::applyEffectToBlocks(QList<Block_info> blocks)
     // 设置计时器在短暂显示全白图像后启动淡出效果
     QTimer::singleShot(300, this, [this, blocks]() {
         // 切换回正常图像但保持特效状态
-        for (Block_info block : blocks) {
-            if(block.is_head) //只有头块运用
-                block.is_whiteBright = false;
+        for (const Block_info &block : blocks) {
+            if (block.is_head && block.is_stable) {
+                game_area[block.bp.pos_y][block.bp.pos_x].is_whiteBright = false;
+            }
         }
         currentOpacity = 1.0;
         update();
@@ -152,7 +157,6 @@ void GameWidget::applyEffectToBlocks(QList<Block_info> blocks)
         fadeAnimation->setStartValue(1.0);
         fadeAnimation->setEndValue(0.0);
         fadeAnimation->start();
-
     });
 }
 
@@ -161,7 +165,7 @@ void GameWidget::BlockGravity(){
     //场景预刷新操作
     memset(vis, 0, sizeof(vis));                         //vis重置
     for(Block_info &tb : tblocks)
-        game_area[tb.bp.pos_y][tb.bp.pos_x] = ini_block; //清空匹配连通块
+        game_area[tb.bp.pos_y][tb.bp.pos_x] = ini_block; //清空匹配连通块（我这里都意识到是应该是修改场景数组块才对……用AI用傻了说是）
     cur_block = ini_block; //包括cur_block
 
     //！！时序上必须要先清空腿部虚块！！
