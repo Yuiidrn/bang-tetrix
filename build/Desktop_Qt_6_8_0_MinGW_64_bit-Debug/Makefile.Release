@@ -804,6 +804,8 @@ release/moc_game.cpp: ../../game.h \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QQueue \
 		D:/software/Qt/6.8.0/mingw_64/include/QtWidgets/QStyle \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QVariantAnimation \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QEasingCurve \
 		release/moc_predefs.h \
 		D:/software/Qt/6.8.0/mingw_64/bin/moc.exe
 	D:\software\Qt\6.8.0\mingw_64\bin\moc.exe $(DEFINES) --include D:/C++_document/QT/BanG_Tetrix!/Bt_cursor/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/release/moc_predefs.h -ID:/software/Qt/6.8.0/mingw_64/mkspecs/win32-g++ -ID:/C++_document/QT/BanG_Tetrix!/Bt_cursor -ID:/software/Qt/6.8.0/mingw_64/include -ID:/software/Qt/6.8.0/mingw_64/include/QtMultimediaWidgets -ID:/software/Qt/6.8.0/mingw_64/include/QtMultimedia -ID:/software/Qt/6.8.0/mingw_64/include/QtWidgets -ID:/software/Qt/6.8.0/mingw_64/include/QtGui -ID:/software/Qt/6.8.0/mingw_64/include/QtNetwork -ID:/software/Qt/6.8.0/mingw_64/include/QtCore -I. -ID:/software/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -ID:/software/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -ID:/software/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -ID:/software/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -ID:/software/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -ID:/software/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\game.h -o release\moc_game.cpp
@@ -2691,7 +2693,9 @@ release/blockLogic.o: ../../blockLogic.cpp ../../game.h \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QDebug \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QQueue \
 		D:/software/Qt/6.8.0/mingw_64/include/QtWidgets/QStyle \
-		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QVariantAnimation \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QEasingCurve
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\blockLogic.o ..\..\blockLogic.cpp
 
 release/blockMatch.o: ../../blockMatch.cpp ../../game.h \
@@ -3274,7 +3278,9 @@ release/blockMatch.o: ../../blockMatch.cpp ../../game.h \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QDebug \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QQueue \
 		D:/software/Qt/6.8.0/mingw_64/include/QtWidgets/QStyle \
-		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QVariantAnimation \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QEasingCurve
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\blockMatch.o ..\..\blockMatch.cpp
 
 release/blockMove.o: ../../blockMove.cpp ../../game.h \
@@ -3857,7 +3863,9 @@ release/blockMove.o: ../../blockMove.cpp ../../game.h \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QDebug \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QQueue \
 		D:/software/Qt/6.8.0/mingw_64/include/QtWidgets/QStyle \
-		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QVariantAnimation \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QEasingCurve
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\blockMove.o ..\..\blockMove.cpp
 
 release/game.o: ../../game.cpp ../../game.h \
@@ -4441,6 +4449,8 @@ release/game.o: ../../game.cpp ../../game.h \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QQueue \
 		D:/software/Qt/6.8.0/mingw_64/include/QtWidgets/QStyle \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QVariantAnimation \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QEasingCurve \
 		../../ui_widget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\game.o ..\..\game.cpp
 
@@ -5246,7 +5256,9 @@ release/main.o: ../../main.cpp ../../game.h \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QDebug \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QQueue \
 		D:/software/Qt/6.8.0/mingw_64/include/QtWidgets/QStyle \
-		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QVariantAnimation \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QEasingCurve
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\main.o ..\..\main.cpp
 
 release/scoreinputdialog.o: ../../scoreTable/scoreinputdialog.cpp ../../scoreTable/scoreinputdialog.h \
@@ -6589,6 +6601,8 @@ release/start.o: ../../start.cpp ../../start.h \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QQueue \
 		D:/software/Qt/6.8.0/mingw_64/include/QtWidgets/QStyle \
 		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QtAlgorithms \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QVariantAnimation \
+		D:/software/Qt/6.8.0/mingw_64/include/QtCore/QEasingCurve \
 		ui_start.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\start.o ..\..\start.cpp
 

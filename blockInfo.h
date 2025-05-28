@@ -9,6 +9,8 @@ using namespace std;
 const int BAND_NUM = 9; //乐队个数
 const int CHAR_NUM = 5; //成员个数
 const int SET_NUM = 3;  //设置仅前n个乐队
+const int BAND_SET[BAND_NUM] = {0, 0, 0, 0, 0, 0, 0, 1, 1}; //自选下落乐队（标1即选）
+
 const QString bandList[BAND_NUM] = {
     "Poppin_Party",   //0 万物起源
     "Afterglow",

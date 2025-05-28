@@ -83,8 +83,9 @@ void GameWidget::InitGame()
             game_area[i][j] = ini_block; //默认构造函数作初始化
 
     //剩余乐队及成员管理
-    for(int i = 0; i < SET_NUM/*BAND_NUM*/; i++)
-        bandRest.insert(i); // bandRest = {0,1,2,3,4,5,6,7,8};
+    for(int i = 0; i < BAND_NUM/*SET_NUM*/; i++)
+        if(BAND_SET[i])
+            bandRest.insert(i); //完整bandRest = {0,1,2,3,4,5,6,7,8};
 
     for(int j = 0; j < CHAR_NUM; j++)
         ini_set.insert(j); // ini_set = {0, 1, 2, 3, 4, 5};

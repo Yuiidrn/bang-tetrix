@@ -9,12 +9,13 @@ void GameWidget::CreateBlock(Block_info &head_block)    //对next_block的引用
 
     QString ImgPath = ":/imgs/img/", rbandSoundPath = "qrc:/sounds/sound/";
     int sum = 0;
-    for(int i = 0; i < SET_NUM/*BAND_NUM*/; i++)
-        sum += charRest[i].size();
+    for(int i = 0; i < BAND_NUM/*SET_NUM*/; i++)
+        if(BAND_SET[i])
+            sum += charRest[i].size();
     int is_item = -1;
     if(sum > 0)       //避免模零异常，下同
         is_item = rand() % sum;
-    const double prob = 1/5.0; //基于剩余成员越少，万能块越容易刷出的动态概率(整型数判断)
+    const double prob = 1/6.0; //基于剩余成员越少，万能块越容易刷出的动态概率(整型数判断)
 
     if(is_item > sum *(1-prob) || is_item < 0){ //无剩余乐队则必是物块，同时避免rof模零异常
         int numItems = 3;
