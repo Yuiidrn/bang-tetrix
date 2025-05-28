@@ -1,9 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "start.h"
-#include "background.h"
+#include "mainmenu.h"
+#include "scoreinput.h"
+#include "backgroundInfo.h"
 #include "blockInfo.h"
+#include "gameoverdialog.h"
 #include <QWidget>
 #include <QApplication>
 #include <QtMultimedia>
@@ -25,13 +27,17 @@
 #include <QtAlgorithms>
 #include <math.h>
 #include <QPair>
+#include <QVariantAnimation>
+#include <QEasingCurve>
+#include <QVariant>
+
 using namespace std;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
 
-class Widget : public QWidget
+class GameWidget : public QWidget
 {
     Q_OBJECT
 signals:
@@ -42,10 +48,11 @@ public slots:
 
 public:
     /*界面*/
-    void initMenu(Start *menu);   //分配菜单界面实例
+    void initMenu(Mainmenu *menu);   //分配菜单界面实例
     void InitGame();  //游戏初始化
     void StartGame(); //开始游戏
     void GameOver();  //游戏结束
+    void goToMainMenu();    //界面切换
 
     /*物块逻辑*/
     void ResetBlock(); //重置人物块（准确来说是进行交替？）
@@ -55,15 +62,15 @@ public:
     void ConvertStable(int x, int pos_y, Block_info &cpy_block);    //转换为稳定方块
     bool IsCollide(Block_info check_block, Direction dir); //判断是否会碰撞
     int BlockCheck();           //匹配相消检查，并作整体下移
+    void BlockGravity();    //音效切换
 
-    /*其他*/
-    void onPlayingChanged();    //音效切换
-    void goToMainMenu();        //界面切换
-
+    /*渐隐特效*/
+    QPixmap createWhiteOutlineImage(const QPixmap &original);  // 创建全白轮廓图像
+    void applyEffectToBlocks(QList<Block_info> blocks);  // 应用特效到多个方块
 
 public:
-    Widget(QWidget *parent = nullptr);
-    ~Widget();
+    GameWidget(QWidget *parent = nullptr);
+    ~GameWidget();
 
     void paintEvent(QPaintEvent *event); //场景刷新    
     void keyPressEvent(QKeyEvent *event); //键盘响应
@@ -72,9 +79,10 @@ public:
 private:
     Ui::Widget *ui;
     //主菜单
-    Start *menu;
+    Mainmenu *menu;
+    ScoreInput *scoreInput;
 
-    //场景参数
+    //--场景参数--
     Block_info game_area[AREA_ROW][AREA_COL]; //场景区域：belong = 0 即为空方格
     QRect availableGeometry;    //屏幕矩阵信息
     qreal scaleUi;
@@ -92,14 +100,14 @@ private:
     double speed_ms;   //下落时间间隔
     double refresh_ms; //刷新时间间隔
 
-    //当前人物块信息    
+    //--当前人物块信息--
     Block_info cur_block;   //当前方块形状    
     Block_info next_block;  //下一个方块形状
     Block_info ini_block;  //空块，重置赋零值用
     int iniPos_x;   //生成位置坐标
     int iniPos_y;
 
-    //剩余人物信息
+    //--剩余人物信息--
     QSet<int> bandRest;   //非空剩余乐队可在消块逻辑触发时直接补进相应乐队编号即可形成动态维护！（初始时均为非空）
     QSet<int> charRest[BAND_NUM], ini_set; //各乐队游戏场景外成员编号（ini_set = {0, 1, 2, 3, 4}(作成员消块后恢复用)）
 
@@ -117,5 +125,13 @@ private:
     QVector<QPixmap> Marinas;   // 存储多张图片
     int currentIndex;           // 当前显示的图片索引
     QTimer *Mtimer;             // 定时器用于切换图片
+    
+    // 游戏状态标志
+    bool isGameOver;
+
+    //--渐隐特效--
+    qreal currentOpacity;    // 当前不透明度
+    QVariantAnimation *fadeAnimation;
+    QTimer *brightnessTimer;
 };
 #endif // GAME_H

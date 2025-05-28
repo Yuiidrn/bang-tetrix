@@ -8,9 +8,9 @@
 
 #include "../../../game.h"
 #include <QtGui/qtextcursor.h>
+#include <QtNetwork/QSslError>
 #include <QtGui/qscreen.h>
 #include <QtNetwork/QSslPreSharedKeyAuthenticator>
-#include <QtNetwork/QSslError>
 #include <QtCore/qmetatype.h>
 
 #include <QtCore/qtmochelpers.h>
@@ -37,9 +37,9 @@ QT_WARNING_DISABLE_GCC("-Wuseless-cast")
 namespace {
 
 #ifdef QT_MOC_HAS_STRINGDATA
-struct qt_meta_stringdata_CLASSWidgetENDCLASS_t {};
-constexpr auto qt_meta_stringdata_CLASSWidgetENDCLASS = QtMocHelpers::stringData(
-    "Widget",
+struct qt_meta_stringdata_CLASSGameWidgetENDCLASS_t {};
+constexpr auto qt_meta_stringdata_CLASSGameWidgetENDCLASS = QtMocHelpers::stringData(
+    "GameWidget",
     "MarinaAnimation",
     "",
     "playStartMA",
@@ -50,7 +50,7 @@ constexpr auto qt_meta_stringdata_CLASSWidgetENDCLASS = QtMocHelpers::stringData
 #endif // !QT_MOC_HAS_STRINGDATA
 } // unnamed namespace
 
-Q_CONSTINIT static const uint qt_meta_data_CLASSWidgetENDCLASS[] = {
+Q_CONSTINIT static const uint qt_meta_data_CLASSGameWidgetENDCLASS[] = {
 
  // content:
       12,       // revision
@@ -80,15 +80,15 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSWidgetENDCLASS[] = {
        0        // eod
 };
 
-Q_CONSTINIT const QMetaObject Widget::staticMetaObject = { {
+Q_CONSTINIT const QMetaObject GameWidget::staticMetaObject = { {
     QMetaObject::SuperData::link<QWidget::staticMetaObject>(),
-    qt_meta_stringdata_CLASSWidgetENDCLASS.offsetsAndSizes,
-    qt_meta_data_CLASSWidgetENDCLASS,
+    qt_meta_stringdata_CLASSGameWidgetENDCLASS.offsetsAndSizes,
+    qt_meta_data_CLASSGameWidgetENDCLASS,
     qt_static_metacall,
     nullptr,
-    qt_incomplete_metaTypeArray<qt_meta_stringdata_CLASSWidgetENDCLASS_t,
+    qt_incomplete_metaTypeArray<qt_meta_stringdata_CLASSGameWidgetENDCLASS_t,
         // Q_OBJECT / Q_GADGET
-        QtPrivate::TypeAndForceComplete<Widget, std::true_type>,
+        QtPrivate::TypeAndForceComplete<GameWidget, std::true_type>,
         // method 'MarinaAnimation'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'playStartMA'
@@ -99,10 +99,10 @@ Q_CONSTINIT const QMetaObject Widget::staticMetaObject = { {
     nullptr
 } };
 
-void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void GameWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<Widget *>(_o);
+        auto *_t = static_cast<GameWidget *>(_o);
         (void)_t;
         switch (_id) {
         case 0: _t->MarinaAnimation(); break;
@@ -113,8 +113,8 @@ void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (Widget::*)();
-            if (_t _q_method = &Widget::MarinaAnimation; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+            using _t = void (GameWidget::*)();
+            if (_t _q_method = &GameWidget::MarinaAnimation; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
                 *result = 0;
                 return;
             }
@@ -123,20 +123,20 @@ void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
     (void)_a;
 }
 
-const QMetaObject *Widget::metaObject() const
+const QMetaObject *GameWidget::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *Widget::qt_metacast(const char *_clname)
+void *GameWidget::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_CLASSWidgetENDCLASS.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_CLASSGameWidgetENDCLASS.stringdata0))
         return static_cast<void*>(this);
     return QWidget::qt_metacast(_clname);
 }
 
-int Widget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int GameWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QWidget::qt_metacall(_c, _id, _a);
     if (_id < 0)
@@ -154,7 +154,7 @@ int Widget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void Widget::MarinaAnimation()
+void GameWidget::MarinaAnimation()
 {
     QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
 }

@@ -12,9 +12,9 @@ inline void Sleep(unsigned int msec){
 
 /*场景消除逻辑*/
 int vis[AREA_ROW][AREA_COL] = {0};
-QVector<Block_info> v; //用来存相消块
+QList<Block_info> tblocks; //暂存匹配块
 //递归检查消除
-int Widget::BlockCheck()
+int GameWidget::BlockCheck()
 {
     //处理消块，整个场景悬空人物头块下移（并发出相应乐队信号！反馈播出相应bgm）, 考虑使用槽和信号？
         //连通块BFS搜索，相消后还得整体下移
@@ -27,7 +27,7 @@ int Widget::BlockCheck()
                 QQueue<Block_info> q;  //BFS搜索队列
                 int cur_charNum = 0;   //用来记录目前匹对人数
 
-                v.clear();
+                tblocks.clear();
 
                 Block_info tBlock = game_area[i][j];
                 Band_name cur_blng = tBlock.belong;
@@ -39,7 +39,7 @@ int Widget::BlockCheck()
                 //BFS开始
                 while(q.size()) {
                     block_point tp = q.front().bp;
-                    v.push_back(q.front());
+                    tblocks.push_back(q.front());
                     if(q.front().belong != Item)
                         cur_charNum++;
                     q.pop_front();
@@ -66,11 +66,16 @@ int Widget::BlockCheck()
                     charRest[(int)cur_blng] = ini_set;   //乐队成员全部回入
                     bandRest.insert((int)cur_blng);      //相应匹配乐队编号回入剩余集合中
                     cur_bandMP->play();
+
+                    cur_block = ini_block; // 清空当前块，避免重绘过程上一活动块实体覆盖稳定块渐隐特效
+                    applyEffectToBlocks(tblocks);
+
                     gameTimer->stop();
 
                     this->installEventFilter(this);     //窗口对自己安装一个事件过滤器，屏蔽对界面的所有输入 实现暂停
                     Sleep(m_MPdur + 100);   //只有QMediaPlayer能获取时长
-                    onPlayingChanged();     //必须保证onPlayingChanged调用后清除匹配块，避免二次进入
+                    BlockGravity();         //必须保证重力机制调用后清除匹配块，避免二次进入
+
                 } else { //还原万能块vis信息
                     for(auto &p : Items)
                         vis[p.first][p.second] = 0;
@@ -82,19 +87,85 @@ int Widget::BlockCheck()
         return match_count + BlockCheck();  //递归调用（1 + 1 +...+ 0）
     //之前逻辑有误，应该是直到最后没有匹配块时才继续下落和操作！！
     else {
-        // 继续游戏（启用键盘和鼠标事件）
-        this->removeEventFilter(this);
-        gameTimer->start(); //继续下落计时器
+        // 未做到极限消除，补回GameOver状态
+        if(game_area[iniPos_y][iniPos_x].is_stable) {
+            isGameOver = true;
+        }
+        // 出口未堵，继续游戏（启用键盘和鼠标事件）
+        else {
+            this->removeEventFilter(this);
+            gameTimer->start(); //继续下落计时器
+        }
         return 0;
     }
 }
 
-//收尾
-void Widget::onPlayingChanged(){
+QPixmap GameWidget::createWhiteOutlineImage(const QPixmap &original)
+{
+    if (original.isNull()) {
+        return QPixmap();
+    }
+
+    // 创建一个与原图相同大小的图像
+    QPixmap whiteImage(original.size());
+    whiteImage.fill(Qt::transparent);
+
+    // 在新图像上绘制
+    QPainter painter(&whiteImage);
+
+    // 绘制原始图像
+    painter.drawPixmap(0, 0, original);
+
+    // 设置复合模式为叠加
+    painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+
+    // 填充白色
+    painter.fillRect(original.rect(), Qt::white);
+
+    painter.end();
+
+    return whiteImage;
+}
+
+// 消块特效
+void GameWidget::applyEffectToBlocks(QList<Block_info> blocks)
+{
+    // 标记所有方块需要应用特效
+    for (const Block_info &block : blocks) {
+        // 修改game_area数组中的块，而不是局部变量
+        if (block.is_head && block.is_stable) {
+            game_area[block.bp.pos_y][block.bp.pos_x].is_whiteBright = true;
+            game_area[block.bp.pos_y][block.bp.pos_x].is_fadeEffect = true;
+        }
+    }
+
+    // 更新显示
+    update();
+
+    // 设置计时器在短暂显示全白图像后启动淡出效果
+    QTimer::singleShot(300, this, [this, blocks]() {
+        // 切换回正常图像但保持特效状态
+        for (const Block_info &block : blocks) {
+            if (block.is_head && block.is_stable) {
+                game_area[block.bp.pos_y][block.bp.pos_x].is_whiteBright = false;
+            }
+        }
+        currentOpacity = 1.0;
+        update();
+
+        // 开始淡出动画
+        fadeAnimation->setStartValue(1.0);
+        fadeAnimation->setEndValue(0.0);
+        fadeAnimation->start();
+    });
+}
+
+// 重力机制
+void GameWidget::BlockGravity(){
     //场景预刷新操作
     memset(vis, 0, sizeof(vis));                         //vis重置
-    for(Block_info &tb : v)
-        game_area[tb.bp.pos_y][tb.bp.pos_x] = ini_block; //清空匹配连通块
+    for(Block_info &tb : tblocks)
+        game_area[tb.bp.pos_y][tb.bp.pos_x] = ini_block; //清空匹配连通块（我这里都意识到是应该是修改场景数组块才对……用AI用傻了说是）
     cur_block = ini_block; //包括cur_block
 
     //！！时序上必须要先清空腿部虚块！！

@@ -8,7 +8,9 @@ using namespace std;
 /*----乐队添加----*/
 const int BAND_NUM = 9; //乐队个数
 const int CHAR_NUM = 5; //成员个数
-const int SET_NUM = 2;  //设置仅前n个乐队，debug用
+const int SET_NUM = 3;  //设置仅前n个乐队
+const int BAND_SET[BAND_NUM] = {1, 1, 1, 1, 1, 1, 1, 1, 1}; //自选下落乐队（标1即选）
+
 const QString bandList[BAND_NUM] = {
     "Poppin_Party",   //0 万物起源
     "Afterglow",
@@ -56,13 +58,15 @@ public:
     int dir;        //先有头部判断，再有腿部朝向：0~3:分别对应下左上右！（即rotate(i * 90°)）
     // 也方便设置di[4], dj[4]来获取腿部游戏区域块方位
     // if (UP): dir = (dir + 1) % 4
-    bool is_stable = 0;  //是否是稳定人物快
+    bool is_stable = 0;  //是否是稳定人物快    
+    bool is_whiteBright = 0; //是否变亮
+    bool is_fadeEffect = 0;  //是否渐隐
 
     double y;             //当前下落距离（用于绘制当前活动块）pos_y = 上取整(y / BLOCK_SIZE)
     block_point bp;       //数组坐标位置
     Band_name belong;     //乐队归属，并是连通块判断相消条件
     QString char_name;    //人物名
-    QPixmap img;           //人物图
+    QPixmap img;          //人物图
     QString bandSoundPath; //音效路径
 };
 
