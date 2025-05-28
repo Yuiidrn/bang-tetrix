@@ -47,24 +47,13 @@ public:
     // 获取当前积分数据
     const QList<GameScore>& getPersonalHistoryData() const { return personalHistoryData; }
     const QList<GameScore>& getWorldPlayersData() const { return worldPlayersData; }
-    
-    // 添加新的个人游戏成绩
-    void addPersonalScore(const QString& playerName, int score);
-    
-    // 添加新的世界玩家成绩
-    void addWorldPlayerScore(const QString& playerName, int score);
-    
-    // 切换排行榜类型
-    void switchTableType(ScoreTableType type);
-    
-    // 获取当前显示的排行榜类型
-    ScoreTableType getCurrentType() const { return currentType; }
 
-    // 更新表格显示
-    void updateTableDisplay();
-
-    // 显示排行榜并安装全局事件过滤器
-    void showAndInstallFilter();
+    void addPersonalScore(const QString& playerName, int score);    // 添加新的个人游戏成绩
+    void addWorldPlayerScore(const QString& playerName, int score); // 添加新的世界玩家成绩
+    void switchTableType(ScoreTableType type);                      // 切换排行榜类型
+    ScoreTableType getCurrentType() const { return currentType; }   // 获取当前显示的排行榜类型
+    void updateTableDisplay();              // 更新表格显示
+    void showAndInstallFilter();            // 显示排行榜并安装全局事件过滤器
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
@@ -88,12 +77,9 @@ private:
     
     // 当前排行榜类型
     ScoreTableType currentType;
-    
-    // 设置按钮样式
-    void updateButtonStyles();
-    
-    // 按分数排序数据
-    void sortScoreData(QList<GameScore>& data);
+
+    void updateButtonStyles();                  // 设置按钮样式
+    void sortScoreData(QList<GameScore>& data); // 按分数排序数据
 
 signals:
     void closed();

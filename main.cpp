@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Start *menu = new Start();
+    Mainmenu *menu = new Mainmenu();
     menu->initGame();
     menu->show();
     return a.exec();

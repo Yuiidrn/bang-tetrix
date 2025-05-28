@@ -56,7 +56,7 @@ void GameWidget::playStartMA(){ //动画定时器
 }
 
 //界面及场景逻辑
-void GameWidget::initMenu(Start *menu){ this->menu = menu; }
+void GameWidget::initMenu(Mainmenu *menu){ this->menu = menu; }
 void GameWidget::goToMainMenu(){ this->hide(); menu->show(); }
 void GameWidget::InitGame()
 {

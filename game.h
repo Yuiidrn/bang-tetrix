@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "start.h"
+#include "mainmenu.h"
 #include "backgroundInfo.h"
 #include "blockInfo.h"
 #include "gameoverdialog.h"
@@ -47,7 +47,7 @@ public slots:
 
 public:
     /*界面*/
-    void initMenu(Start *menu);   //分配菜单界面实例
+    void initMenu(Mainmenu *menu);   //分配菜单界面实例
     void InitGame();  //游戏初始化
     void StartGame(); //开始游戏
     void GameOver();  //游戏结束
@@ -78,7 +78,7 @@ public:
 private:
     Ui::Widget *ui;
     //主菜单
-    Start *menu;
+    Mainmenu *menu;
 
     //--场景参数--
     Block_info game_area[AREA_ROW][AREA_COL]; //场景区域：belong = 0 即为空方格

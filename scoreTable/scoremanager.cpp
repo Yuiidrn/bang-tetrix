@@ -14,7 +14,7 @@ ScoreManager::ScoreManager(QObject *parent)
     // 初始化网络管理器
     networkManager = new QNetworkAccessManager(this);
     
-    // 设置默认服务器URL(真正是在start里面改！)
+    // 设置默认服务器URL(在start.cpp中set改！)
     serverUrl = "-1";
     
     // 加载或生成客户端ID
@@ -216,19 +216,19 @@ QList<GameScore> ScoreManager::scoresFromJson(const QJsonArray &jsonArray)
     return scores;
 }
 
-// 新增方法 - 服务器URL设置
+//  服务器URL设置
 void ScoreManager::setServerUrl(const QString &url)
 {
     serverUrl = url;
 }
 
-// 新增方法 - 获取客户端ID
+//  获取客户端ID
 QString ScoreManager::getClientId() const
 {
     return clientId;
 }
 
-// 新增方法 - 与服务器同步
+//  与服务器同步
 void ScoreManager::syncWithServer()
 {
     if (serverUrl.isEmpty()) {
@@ -243,7 +243,7 @@ void ScoreManager::syncWithServer()
     batchUploadScores();
 }
 
-// 新增方法 - 获取世界排名
+//  获取世界排名
 void ScoreManager::fetchWorldRankings()
 {
     if (serverUrl.isEmpty()) {
@@ -263,7 +263,7 @@ void ScoreManager::fetchWorldRankings()
     });
 }
 
-// 新增方法 - 上传单个分数
+//  上传单个分数
 void ScoreManager::uploadScore(const QString &playerName, int score)
 {
     if (serverUrl.isEmpty()) {
@@ -292,7 +292,7 @@ void ScoreManager::uploadScore(const QString &playerName, int score)
     });
 }
 
-// 新增方法 - 批量上传分数
+//  批量上传分数
 void ScoreManager::batchUploadScores()
 {
     if (serverUrl.isEmpty()) {
@@ -319,7 +319,7 @@ void ScoreManager::batchUploadScores()
     });
 }
 
-// 新增方法 - 生成客户端ID
+//  生成客户端ID
 void ScoreManager::generateClientId()
 {
     // 生成全局唯一的客户端ID
@@ -327,14 +327,14 @@ void ScoreManager::generateClientId()
     saveClientId();
 }
 
-// 新增方法 - 保存客户端ID
+//  保存客户端ID
 void ScoreManager::saveClientId()
 {
     QSettings settings;
     settings.setValue("clientId", clientId);
 }
 
-// 新增方法 - 加载客户端ID
+//  加载客户端ID
 void ScoreManager::loadClientId()
 {
     QSettings settings;
@@ -346,7 +346,7 @@ void ScoreManager::loadClientId()
     }
 }
 
-// 新增方法 - 处理世界排名响应
+//  处理世界排名响应
 void ScoreManager::processWorldRankingsReply(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NoError) {
@@ -377,7 +377,7 @@ void ScoreManager::processWorldRankingsReply(QNetworkReply *reply)
     emit worldRankingsUpdated();
 }
 
-// 新增方法 - 处理分数上传响应
+// 处理分数上传响应
 void ScoreManager::processScoreUploadReply(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NoError) {
@@ -410,7 +410,7 @@ void ScoreManager::processScoreUploadReply(QNetworkReply *reply)
     emit scoreUploadCompleted(true);
 }
 
-// 新增方法 - 处理同步响应
+//  处理同步响应
 void ScoreManager::processSyncReply(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NoError) {

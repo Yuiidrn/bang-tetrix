@@ -22,7 +22,7 @@ ScoreTable::ScoreTable(QWidget *parent)
     
     // 添加标题
     titleLabel = new QLabel("个人历史记录排行榜", this);
-    QFont titleFont("萝莉体", 16, QFont::Bold);
+    QFont titleFont("华文彩云", 16, QFont::Bold); //"萝莉体"，如果有的话(
     titleLabel->setFont(titleFont);
     titleLabel->setAlignment(Qt::AlignCenter);
     mainLayout->addWidget(titleLabel);
@@ -34,7 +34,7 @@ ScoreTable::ScoreTable(QWidget *parent)
     personalHistoryButton = new QPushButton("个人历史记录", this);
     worldPlayersButton = new QPushButton("世界玩家排名", this);
     
-    QFont buttonFont("萝莉体", 10);
+    QFont buttonFont("华文彩云", 10);           //
     personalHistoryButton->setFont(buttonFont);
     worldPlayersButton->setFont(buttonFont);
     
@@ -443,8 +443,6 @@ bool ScoreTable::eventFilter(QObject *watched, QEvent *event)
     // 如果是鼠标按下事件
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-
-        // 如果启用了点击外部关闭功能
 
         // 获取鼠标在屏幕上的坐标
         QPoint globalPos = mouseEvent->globalPosition().toPoint();

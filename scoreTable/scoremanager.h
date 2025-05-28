@@ -24,44 +24,24 @@ public:
     explicit ScoreManager(QObject *parent = nullptr);
     ~ScoreManager();
 
-    // 加载本地存储的积分数据
-    bool loadLocalScores();
+    void setDataDirectory(const QString &dirPath);          // 设置应用程序数据目录
+    bool loadLocalScores();                                 // 加载本地存储的积分数据
+    bool saveLocalScores();                                 // 保存积分数据到本地
+    QList<GameScore> getPersonalHistoryScores() const;          // 获取个人历史记录
+    QList<GameScore> getWorldRankingScores() const;             // 获取世界排名记录
+    void addPersonalScore(const QString &playerName, int score);    // 添加新的个人历史记录
+    void addWorldPlayerScore(const QString &playerName, int score); // 添加/更新世界玩家记录
     
-    // 保存积分数据到本地
-    bool saveLocalScores();
-    
-    // 获取个人历史记录
-    QList<GameScore> getPersonalHistoryScores() const;
-    
-    // 获取世界排名记录
-    QList<GameScore> getWorldRankingScores() const;
-    
-    // 添加新的个人历史记录
-    void addPersonalScore(const QString &playerName, int score);
-    
-    // 添加/更新世界玩家记录
-    void addWorldPlayerScore(const QString &playerName, int score);
-    
-    // 设置应用程序数据目录
-    void setDataDirectory(const QString &dirPath);
-    
-    // 新增服务器通信方法
-    void syncWithServer();
-    void fetchWorldRankings();
-    void uploadScore(const QString &playerName, int score);
-    void batchUploadScores();
-    
-    // 设置服务器URL
-    void setServerUrl(const QString &url);
-    
-    // 获取客户端ID
-    QString getClientId() const;
+    void syncWithServer();                  // 同步本地数据到服务器
+    void fetchWorldRankings();              // 从服务器获取世界排名数据
+    void uploadScore(const QString &playerName, int score);  // 上传单个分数到服务器
+    void batchUploadScores();               // 批量上传所有未同步的分数记录
 
-    // 检查服务器连接
-    void checkServerConnection();
+    void setServerUrl(const QString &url); // 设置服务器URL
+    QString getClientId() const;           // 获取客户端ID
+    void checkServerConnection();          // 检查服务器连接
 
 signals:
-    // 新增信号
     void worldRankingsUpdated();
     void syncCompleted(bool success);
     void scoreUploadCompleted(bool success);
@@ -71,30 +51,21 @@ signals:
 private:
     QList<GameScore> personalScores;    // 个人历史记录
     QList<GameScore> worldRankingScores; // 世界排名记录
-    
+
     QString dataDirectory;              // 数据存储目录
     QString personalScoresFile;         // 个人记录文件路径
     QString worldRankingFile;           // 世界排名文件路径
-    
-    // 新增成员
+
     QNetworkAccessManager *networkManager;
     QString serverUrl;
     QString clientId;
     bool isOnline;
-    
-    // 将GameScore列表转换为JSON数组
-    QJsonArray scoresToJson(const QList<GameScore> &scores);
-    
-    // 从JSON数组解析GameScore列表
-    QList<GameScore> scoresFromJson(const QJsonArray &jsonArray);
-    
-    // 确保数据目录存在
-    bool ensureDataDirectoryExists();
-    
-    // 按分数排序数据
-    void sortScoreData(QList<GameScore> &data);
 
-    // 新增私有方法
+    QJsonArray scoresToJson(const QList<GameScore> &scores);      // 将GameScore列表转换为JSON数组
+    QList<GameScore> scoresFromJson(const QJsonArray &jsonArray); // 从JSON数组解析GameScore列表
+    bool ensureDataDirectoryExists();           // 确保数据目录存在
+    void sortScoreData(QList<GameScore> &data); // 按分数排序数据
+
     void generateClientId();
     void saveClientId();
     void loadClientId();
