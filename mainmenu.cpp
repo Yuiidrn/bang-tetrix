@@ -13,7 +13,6 @@ Mainmenu::Mainmenu(QWidget *parent) :
     , ui(new Ui::Mainmenu)
     , scoreTable(nullptr)
     , scoreManager(nullptr)
-    , shouldShowGameOver(false)
 {
     ui->setupUi(this);
     int defaultWidth = 1200, defaultHeight = 675;
@@ -39,7 +38,10 @@ Mainmenu::Mainmenu(QWidget *parent) :
     connect(scoreManager, &ScoreManager::worldRankingsUpdated, this, &Mainmenu::onWorldRankingsUpdated);
     connect(scoreManager, &ScoreManager::networkError, this, &Mainmenu::onNetworkError);
     connect(scoreManager, &ScoreManager::syncCompleted, this, &Mainmenu::onSyncCompleted);
-    connect(scoreManager, &ScoreManager::scoreUploadCompleted, this, &Mainmenu::onScoreUploadCompleted);
+
+    // 设置服务器URL（如果有的话，http://yourApi.com/api/scores）
+    scoreManager->setServerUrl("http://8.138.243.128:3000/api/scores");
+    scoreManager->syncWithServer();                 // 尝试与服务器同步
 
     // 创建排行榜但不显示
     scoreTable = new ScoreTable(this);
@@ -48,14 +50,8 @@ Mainmenu::Mainmenu(QWidget *parent) :
     // 加载数据到排行榜
     loadScoreData();
 
-    // 连接排行榜关闭信号
+    // 连接排行榜转换信号
     connect(scoreTable, &ScoreTable::typeChanged, this, &Mainmenu::onScoreTableTypeChanged);
-    connect(scoreTable, &ScoreTable::closed, this, &Mainmenu::onScoreTableClosed);
-
-    // 尝试与服务器同步
-    // 设置服务器URL（如果有的话，http://yourApi.com/api/scores）
-    scoreManager->setServerUrl("http://8.138.243.128:3000/api/scores");
-    scoreManager->syncWithServer();
 }
 Mainmenu::~Mainmenu(){     // 保存积分数据
     if (scoreManager) {
@@ -105,7 +101,6 @@ void Mainmenu::showScoreTable()
         loadScoreData();
 
         connect(scoreTable, &ScoreTable::typeChanged, this, &Mainmenu::onScoreTableTypeChanged); // 连接类型变化信号
-        connect(scoreTable, &ScoreTable::closed, this, &Mainmenu::onScoreTableClosed);           // 连接关闭信号
     }
 
     // 居中显示在主界面上
@@ -131,101 +126,6 @@ void Mainmenu::onScoreTableTypeChanged(ScoreTableType newType)
     loadScoreData();
 }
 
-// 显示游戏结束界面
-void Mainmenu::showGameOverDialog()
-{
-    // 创建游戏结束对话框
-    GameOverDialog dialog(this);
-
-    // 设置背景图片（如果存在）
-    if (QFile(":/imgs/img/ui/inputbg.jpg").exists()) {
-        dialog.setBackgroundImage(":/imgs/img/ui/inputbg.jpg");
-    }
-
-    // 显示对话框并等待用户选择
-    dialog.exec();
-
-    // 处理用户选择的按钮
-    GameOverDialog::GameOverResult result = dialog.getResult();
-
-    if (result == GameOverDialog::Restart) {
-        game->InitGame();     // 调用重新开始游戏的方法
-    } else if (result == GameOverDialog::MainMenu) {
-        game->goToMainMenu();  // 调用返回主菜单的方法
-    } else {
-        QApplication::quit();  // 退出游戏
-    }
-}
-
-void Mainmenu::scoreRecord(int end_score, int end_combo)
-{
-    // 录入分数分数
-    int score = end_score;
-    int combo = end_combo;
-
-    // 检查是否创造了新高记录
-    bool isNewRecord = checkIfNewRecord(score);
-
-    // 显示分数结算对话框并获取玩家名称，若是新高记录则提示用户
-    QString playerName = getPlayerNameInput(score, combo, isNewRecord);
-
-    // 如果玩家取消输入，不添加成绩，并直接显示游戏结束界面
-    if (playerName.isEmpty()) {
-        showGameOverDialog();
-        return;
-    }
-
-    // 使用ScoreManager添加分数到本地
-    scoreManager->addPersonalScore(playerName, score);
-    scoreManager->addWorldPlayerScore(playerName, score);
-
-    // 上传分数到服务器
-    scoreManager->uploadScore(playerName, score);
-
-    // 重新加载积分数据到表格
-    loadScoreData();
-
-    // 设置标记，表示排行榜关闭后需要显示游戏结束界面
-    shouldShowGameOver = true;
-    
-    // 显示排行榜
-    showScoreTable();
-}
-
-bool Mainmenu::checkIfNewRecord(int score)
-{
-    // 检查是否创造了个人历史记录最高分
-    const QList<GameScore>& personalData = scoreManager->getPersonalHistoryScores();
-    if (personalData.isEmpty() || score > personalData.first().score) {
-        return true;
-    }
-
-    return false;
-}
-
-QString Mainmenu::getPlayerNameInput(int score, int combo, bool isNewRecord)
-{
-    ScoreInputDialog dialog(this);
-
-    QString defaultName = "新手工作人员" + QString::number(QRandomGenerator::global()->bounded(1000, 10000));
-    dialog.setDefaultName(defaultName);  //设置默认用户名
-
-    dialog.setScore(score, isNewRecord); //设置分数并判断是否为新高分
-    dialog.setMaxCombo(combo);           //设置连击数
-
-    // 设置背景图片（如果图片存在）
-    if (QFile(":/imgs/img/ui/inputbg.jpg").exists()) {
-        dialog.setBackgroundImage(":/imgs/img/ui/inputbg.jpg");
-    }
-
-    // 显示对话框并等待用户输入
-    if (dialog.exec() == QDialog::Accepted) {
-        return dialog.getPlayerName();
-    } else {
-        return QString();
-    }
-}
-
 // 新增网络相关槽函数实现
 void Mainmenu::onWorldRankingsUpdated()
 {
@@ -243,8 +143,7 @@ void Mainmenu::onWorldRankingsUpdated()
 
 void Mainmenu::onNetworkError(const QString &errorMessage)
 {
-    // 显示网络错误
-    QMessageBox::warning(this, "网络错误", errorMessage);
+    QMessageBox::warning(this, "网络错误", errorMessage); // 显示网络错误
 }
 
 void Mainmenu::onSyncCompleted(bool success)
@@ -253,25 +152,6 @@ void Mainmenu::onSyncCompleted(bool success)
         qDebug() << "与服务器同步成功";
     } else {
         qDebug() << "与服务器同步失败";
-    }
-}
-
-void Mainmenu::onScoreUploadCompleted(bool success)
-{
-    if (success) {
-        qDebug() << "分数上传成功";
-    } else {
-        qDebug() << "分数上传失败";
-    }
-}
-
-// 添加排行榜关闭的槽函数
-void Mainmenu::onScoreTableClosed()
-{
-    // 如果需要显示游戏结束界面
-    if (shouldShowGameOver) {
-        shouldShowGameOver = false;  // 重置标记
-        showGameOverDialog();        // 显示游戏结束界面
     }
 }
 

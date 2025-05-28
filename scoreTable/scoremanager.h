@@ -37,16 +37,16 @@ public:
     void uploadScore(const QString &playerName, int score);  // 上传单个分数到服务器
     void batchUploadScores();               // 批量上传所有未同步的分数记录
 
-    void setServerUrl(const QString &url); // 设置服务器URL
-    QString getClientId() const;           // 获取客户端ID
-    void checkServerConnection();          // 检查服务器连接
+    void setServerUrl(const QString &url);  // 设置服务器URL
+    QString getClientId() const;            // 获取客户端ID
+    void checkServerConnection();           // 检查服务器连接
 
 signals:
-    void worldRankingsUpdated();
-    void syncCompleted(bool success);
-    void scoreUploadCompleted(bool success);
-    void networkError(const QString &errorMessage);
-    void serverConnectionStatusChanged(bool isConnected, const QString &message);
+    void worldRankingsUpdated();            // 当世界排名数据更新时触发
+    void syncCompleted(bool success);       // 同步操作完成时触发，参数表示是否成功
+    void scoreUploadCompleted(bool success);         // 分数上传完成时触发，参数表示是否成功
+    void networkError(const QString &errorMessage);  // 发生网络错误时触发，包含错误信息
+    void serverConnectionStatusChanged(bool isConnected, const QString &message);  // 服务器连接状态变化时触发
 
 private:
     QList<GameScore> personalScores;    // 个人历史记录
@@ -66,12 +66,12 @@ private:
     bool ensureDataDirectoryExists();           // 确保数据目录存在
     void sortScoreData(QList<GameScore> &data); // 按分数排序数据
 
-    void generateClientId();
-    void saveClientId();
-    void loadClientId();
-    void processWorldRankingsReply(QNetworkReply *reply);
-    void processScoreUploadReply(QNetworkReply *reply);
-    void processSyncReply(QNetworkReply *reply);
+    void generateClientId();                    // 生成客户端唯一标识符
+    void saveClientId();                        // 保存客户端ID到本地
+    void loadClientId();                        // 从本地加载客户端ID
+    void processWorldRankingsReply(QNetworkReply *reply);   // 处理获取世界排名的网络响应
+    void processScoreUploadReply(QNetworkReply *reply);     // 处理分数上传的网络响应
+    void processSyncReply(QNetworkReply *reply);            // 处理数据同步的网络响应
 };
 
 #endif // SCOREMANAGER_H 

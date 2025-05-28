@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "mainmenu.h"
+#include "scoreinput.h"
 #include "backgroundInfo.h"
 #include "blockInfo.h"
 #include "gameoverdialog.h"
@@ -79,6 +80,7 @@ private:
     Ui::Widget *ui;
     //主菜单
     Mainmenu *menu;
+    ScoreInput *scoreInput;
 
     //--场景参数--
     Block_info game_area[AREA_ROW][AREA_COL]; //场景区域：belong = 0 即为空方格

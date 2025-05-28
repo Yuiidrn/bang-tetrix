@@ -19,7 +19,6 @@ GameWidget::GameWidget(QWidget *parent)
     lMARGIN *= scaleUi;
     uMARGIN *= scaleUi;
     this->setWindowTitle("BanG_Tetrix!");
-
 }
 
 inline void block_cpy(Block_info &dblock, Block_info &sblock) { dblock = sblock; }
@@ -60,6 +59,9 @@ void GameWidget::initMenu(Mainmenu *menu){ this->menu = menu; }
 void GameWidget::goToMainMenu(){ this->hide(); menu->show(); }
 void GameWidget::InitGame()
 {
+    //创建后续
+    scoreInput = new ScoreInput();
+
     //乐队背景音设置
     cur_bandMP = new QMediaPlayer(this);          //创建实例！！
     auto audioOutput = new QAudioOutput(this);    //配置*音频输出设备*
@@ -118,8 +120,8 @@ void GameWidget::InitGame()
     // connect(brightnessTimer, &QTimer::timeout, this, &GameWidget::startFadeEffect);
 
     //设置初始下落延迟速度和刷新率
-    speed_ms = 25;
-    fallingHeight = 5;
+    speed_ms = 20;
+    fallingHeight = 4;
     refresh_ms = 16;     //1000ms / 60FPS = 16.67; 1000ms / 165FPS = 6.06
 
     //改用定义实例计时器进行操作(方便后续的音效暂停)
@@ -173,8 +175,11 @@ void GameWidget::GameOver()
     // 清空可能存在的事件队列
     QCoreApplication::processEvents();
 
+    // 先将分数录入逻辑引用当前游戏所创主菜单实例的scoretable和scoremanager的实例
+    scoreInput->initMenu(menu);
+
     // 录入分数（内置跳出游戏结束结算框）
-    menu->scoreRecord(score, MaxCombo);
+    scoreInput->scoreRecord(score, MaxCombo);
 }
 
 void GameWidget::paintEvent(QPaintEvent *event) //不一定非要用绘制函数！也可用原窗口上定义图形类并set的方式

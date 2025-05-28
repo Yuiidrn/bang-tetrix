@@ -111,7 +111,7 @@ void GameWidget::ConvertStable(int x, int pos_y, Block_info &cpy_Block)
     if(game_area[pos_y][x].belong != Item) {
         //腿部
         int leg_i = pos_y + di[game_area[pos_y][x].dir], leg_j = x + dj[game_area[pos_y][x].dir];
-        // 优先判断游戏是否结束，，同时改逻辑为窗口外第“0”行出现腿块才结束
+        // 优先判断游戏是否结束，同时改逻辑为窗口外第“0”行出现腿块才结束
         //（无非两种情况：头出或腿出，而开始生成的话头块以固定为第一行，结合现实“不太可能会有头出(还真是)”的情况，因此需格外排除腿出的情况）
 
         //出口顶端已有稳定方块——先看能否“极限消除”
