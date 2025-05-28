@@ -31,7 +31,7 @@ ScoreInputDialog::ScoreInputDialog(QWidget *parent)
     
     // 创建奖杯图标标签(最初隐藏)
     trophyLabel = new QLabel(this);
-    trophyLabel->setFixedSize(32, 32);
+    trophyLabel->setFixedSize(40, 40);
     trophyLabel->setScaledContents(true);
     trophyLabel->hide();  // 默认隐藏，只有新高分时才显示
     
