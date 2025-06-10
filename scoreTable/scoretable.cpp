@@ -165,7 +165,7 @@ ScoreTable::ScoreTable(QWidget *parent)
     );
     
     // 设置固定大小
-    setMinimumSize(470, 470);
+    setMinimumSize(570, 470);
 }
 
 ScoreTable::~ScoreTable()
