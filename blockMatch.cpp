@@ -34,7 +34,7 @@ int GameWidget::BlockCheck()
 
                 cur_bandMP->setSource(tBlock.bandSoundPath); //提前加载
 
-                vis[i][j] = 1;  //byd BFS真太久妹写了！先记录再push啊！这样多元素同时刻push进队列才不会重复啊！！
+                vis[i][j] = 1;  //先记录再push！这样多元素同时刻push进队列才不会重复
                 q.push_back(tBlock);
                 //BFS开始
                 while(q.size()) {

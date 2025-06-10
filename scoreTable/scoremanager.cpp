@@ -15,7 +15,7 @@ ScoreManager::ScoreManager(QObject *parent)
     networkManager = new QNetworkAccessManager(this);
     
     //(需要自行配置服务器搭键数据库并部署后端，这是实现世界排名所需要的后端功能，不设置也不影响游戏的运行)
-    // 设置默认服务器URL(同时修改在Mainmenu.cpp中构造函数里的相应的set函数参数)
+    // 设置默认服务器URL(同时修改在mainmenu.cpp中构造函数里的相应的set函数参数)
     serverUrl = "-1";
     
     // 加载或生成客户端ID

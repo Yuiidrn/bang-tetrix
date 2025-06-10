@@ -92,7 +92,7 @@ public:
         begin->setText(QCoreApplication::translate("Mainmenu", "\345\274\200\345\247\213\346\270\270\346\210\217", nullptr));
         bg->setText(QString());
 #if QT_CONFIG(tooltip)
-        showScoreTableButton->setToolTip(QCoreApplication::translate("Mainmenu", "<html><head/><body><p>\351\230\277\346\235\276\345\244\247</p></body></html>", nullptr));
+        showScoreTableButton->setToolTip(QCoreApplication::translate("Mainmenu", "<html><head/><body><p></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
         showScoreTableButton->setText(QCoreApplication::translate("Mainmenu", "\346\216\222\350\241\214\346\246\234", nullptr));
     } // retranslateUi

@@ -15,7 +15,7 @@ void GameWidget::CreateBlock(Block_info &head_block)    //对next_block的引用
     int is_item = -1;
     if(sum > 0)       //避免模零异常，下同
         is_item = rand() % sum;
-    const double prob = 1/6.0; //基于剩余成员越少，万能块越容易刷出的动态概率(整型数判断)
+    const double prob = 1/10.0; //基于剩余成员越少，万能块越容易刷出的动态概率(整型数判断)
 
     if(is_item > sum *(1-prob) || is_item < 0){ //无剩余乐队则必是物块，同时避免rof模零异常
         int numItems = 3;
@@ -62,12 +62,8 @@ void GameWidget::CreateBlock(Block_info &head_block)    //对next_block的引用
         head_block.bandSoundPath = rbandSoundPath;
     }
 
-    //初始位置
+    //初始位置和朝向
     int rPos_x = 4, rDir = 2;
-//    //人物块位置信息随机逻辑（主要是横轴）, 以方块左上角为锚点
-//    int rPos_x = rand()%AREA_COL, rDir = rand()%4; //rand()%4; 0 —— 腿部朝下
-//    while(rPos_x == 0 || rPos_x == AREA_COL - 1 ) //注意需要一直随机到避免是生成在边缘且刚好腿部延申出界的情况
-//        rPos_x = rand()%AREA_COL;
 
     //设置初始人物块基本信息（先实现正常下落）
     head_block.img = QPixmap(ImgPath);
@@ -136,7 +132,7 @@ void GameWidget::ConvertStable(int x, int pos_y, Block_info &cpy_Block)
 //碰撞逻辑
 bool GameWidget::IsCollide(Block_info check_block, Direction key_dir)  //给定为头块坐标
 {
-    /*试错法！！！碰撞检测很值得学习的思路！*/
+    /*试错法*/
     //用临时方向做判断
     int x = check_block.bp.pos_x, pos_y = check_block.bp.pos_y, ty = check_block.y;
     bool is_item = check_block.belong == Item ? true : false;
@@ -163,7 +159,7 @@ bool GameWidget::IsCollide(Block_info check_block, Direction key_dir)  //给定�
         break;
     }
     //pos_y + 1后去乘块高 才代表当前行格的底端下落高，也即零行下标起点行格像素高特性
-    if(abs((pos_y + 1) * BLOCK_SIZE - ty) <= fallingHeight * 2) //嵌入精判(上下放宽n个下落帧
+    if(abs((pos_y + 1) * BLOCK_SIZE - ty) <= fallingHeight * 3) //嵌入精判(上下放宽n个下落帧
         tpos_y = pos_y;  //差距仅n个下落帧
     else
         tpos_y = (pos_y - 1) < 0 ? 0 : (pos_y - 1); //否则tpos_y仍保持上一行的碰撞体积
