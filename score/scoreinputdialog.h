@@ -48,6 +48,11 @@ private:
     int maxCombo;
     bool isNewHighScore;
     
+    void applyNameInputStyle(bool emptyError);
+
+    // 有背景图时：酒红渐变压暗 + 暗角，适配花哨海报类底图
+    void drawBusyBackgroundOverlay(QPainter &painter, const QRect &rect);
+
     // 绘制默认背景
     void drawDefaultBackground(QPainter &painter, const QRect &rect);
 

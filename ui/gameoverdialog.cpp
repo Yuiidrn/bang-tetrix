@@ -1,9 +1,14 @@
 #include "gameoverdialog.h"
 #include <QPainter>
+#include <QPainterPath>
 #include <QPixmap>
 #include <QApplication>
 #include <QScreen>
 #include <QGraphicsDropShadowEffect>
+
+namespace {
+constexpr int kPanelRadius = 18;
+} // namespace
 
 GameOverDialog::GameOverDialog(QWidget *parent)
     : QDialog(parent), result(Quit)
@@ -56,12 +61,11 @@ GameOverDialog::GameOverDialog(QWidget *parent)
     mainLayout->addSpacing(20);
     mainLayout->addLayout(buttonLayout);
     
-    // 添加窗口阴影效果
-    QGraphicsDropShadowEffect *shadowEffect = new QGraphicsDropShadowEffect(this);
-    shadowEffect->setBlurRadius(20);
-    shadowEffect->setColor(QColor(0, 0, 0, 180));
-    shadowEffect->setOffset(0, 0);
-    this->setGraphicsEffect(shadowEffect);
+    auto *shadowEffect = new QGraphicsDropShadowEffect(this);
+    shadowEffect->setBlurRadius(28);
+    shadowEffect->setColor(QColor(20, 5, 12, 150));
+    shadowEffect->setOffset(0, 6);
+    setGraphicsEffect(shadowEffect);
     
     // 设置固定大小
     setMinimumSize(400, 250);
@@ -127,23 +131,55 @@ void GameOverDialog::keyPressEvent(QKeyEvent *event)
 
 void GameOverDialog::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    
-    // 如果设置了背景图片，则使用图片，否则使用默认背景
-    if (!backgroundImagePath.isEmpty() && QFile::exists(backgroundImagePath)) {
-        QPixmap bgImage(backgroundImagePath);
-        painter.drawPixmap(rect(), bgImage, bgImage.rect());
-        
-        // 添加半透明遮罩以确保文字清晰可见
-        painter.setBrush(QColor(0, 0, 0, 180));
-        painter.setPen(Qt::NoPen);
-        painter.drawRoundedRect(rect(), 15, 15);
+
+    const QRect r = rect();
+    QPainterPath clipPath;
+    clipPath.addRoundedRect(r, kPanelRadius, kPanelRadius);
+    painter.setClipPath(clipPath);
+
+    if (!backgroundImagePath.isEmpty()) {
+        const QPixmap pixmap(backgroundImagePath);
+        if (!pixmap.isNull()) {
+            const QPixmap scaled =
+                pixmap.scaled(r.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            painter.drawPixmap(r, scaled);
+            drawBusyBackgroundOverlay(painter, r);
+        } else {
+            painter.setClipping(false);
+            drawDefaultBackground(painter, r);
+        }
     } else {
-        drawDefaultBackground(painter, rect());
+        painter.setClipping(false);
+        drawDefaultBackground(painter, r);
     }
-    
+
+    painter.setClipping(false);
     QDialog::paintEvent(event);
+}
+
+void GameOverDialog::drawBusyBackgroundOverlay(QPainter &painter, const QRect &rect)
+{
+    const QPoint topMid(rect.center().x(), rect.top());
+    const QPoint botMid(rect.center().x(), rect.bottom());
+    QLinearGradient wash(topMid, botMid);
+    wash.setColorAt(0.0, QColor(88, 20, 48, 218));
+    wash.setColorAt(0.4, QColor(48, 12, 32, 198));
+    wash.setColorAt(1.0, QColor(22, 6, 16, 232));
+    painter.fillRect(rect, wash);
+
+    const qreal cx = rect.center().x();
+    const qreal cy = rect.center().y() + rect.height() * 0.06;
+    const qreal rad = qMax(rect.width(), rect.height()) * 0.78;
+    QRadialGradient vig(cx, cy, rad);
+    vig.setColorAt(0.0, QColor(248, 200, 220, 0));
+    vig.setColorAt(0.38, QColor(0, 0, 0, 0));
+    vig.setColorAt(1.0, QColor(0, 0, 0, 155));
+    painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    painter.fillRect(rect, vig);
 }
 
 bool GameOverDialog::eventFilter(QObject *watched, QEvent *event)
@@ -153,22 +189,20 @@ bool GameOverDialog::eventFilter(QObject *watched, QEvent *event)
 
 void GameOverDialog::drawDefaultBackground(QPainter &painter, const QRect &rect)
 {
-    // 创建渐变背景
+    // 无海报图时与分数对话框普通态一致的深蓝渐变 + 同圆角
     QLinearGradient gradient(rect.topLeft(), rect.bottomRight());
-    gradient.setColorAt(0, QColor(45, 45, 62, 240));
-    gradient.setColorAt(1, QColor(25, 25, 37, 240));
-    
+    gradient.setColorAt(0, QColor(59, 89, 152));
+    gradient.setColorAt(0.5, QColor(41, 62, 105));
+    gradient.setColorAt(1, QColor(23, 35, 60));
+
     painter.setPen(Qt::NoPen);
     painter.setBrush(gradient);
-    
-    // 绘制圆角矩形作为背景
-    painter.drawRoundedRect(rect, 15, 15);
-    
-    // 绘制边框
-    QPen borderPen(QColor(80, 80, 120, 150), 2);
+    painter.drawRoundedRect(rect, kPanelRadius, kPanelRadius);
+
+    QPen borderPen(QColor(255, 255, 255, 36), 1);
     painter.setPen(borderPen);
     painter.setBrush(Qt::NoBrush);
-    painter.drawRoundedRect(rect.adjusted(1, 1, -1, -1), 15, 15);
+    painter.drawRoundedRect(rect.adjusted(1, 1, -1, -1), kPanelRadius, kPanelRadius);
 }
 
 void GameOverDialog::setupStyles()

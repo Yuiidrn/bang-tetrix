@@ -50,7 +50,10 @@ private:
     
     QString backgroundImagePath;
     GameOverResult result;
-    
+
+    // 与 ScoreInputDialog 一致：海报底图上的酒红渐变 + 暗角
+    void drawBusyBackgroundOverlay(QPainter &painter, const QRect &rect);
+
     // 绘制默认背景
     void drawDefaultBackground(QPainter &painter, const QRect &rect);
     

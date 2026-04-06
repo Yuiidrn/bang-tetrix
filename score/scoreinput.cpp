@@ -15,6 +15,8 @@ void ScoreInput::initMenu(Mainmenu* &gameInstance_menu){
     menu = gameInstance_menu;
     scoreTable = menu->getScoreTable();
     scoreManager = menu->getScoreManager();
+    inputBgImgPath = QString(":/imgs/img/ui/inputbg2.jpg") ;
+
     //信号广播者必须是连接当前游戏的具体实例! 不是放上面刚创的实例去connect!
     connect(scoreTable, &ScoreTable::closed, this, &ScoreInput::onScoreTableClosed);
     connect(scoreManager, &ScoreManager::scoreUploadCompleted, this, &ScoreInput::onScoreUploadCompleted);
@@ -77,8 +79,8 @@ QString ScoreInput::getPlayerNameInput(int score, int combo, bool isNewRecord)
     dialog.setMaxCombo(combo);           //设置连击数
 
     // 设置背景图片（如果图片存在）
-    if (QFile(":/imgs/img/ui/inputbg.jpg").exists()) {
-        dialog.setBackgroundImage(":/imgs/img/ui/inputbg.jpg");
+    if (QFile(inputBgImgPath).exists()) {
+        dialog.setBackgroundImage(inputBgImgPath);
     }
 
     // 显示对话框并等待用户输入
@@ -105,9 +107,10 @@ void ScoreInput::showGameOverDialog()
     // 创建游戏结束对话框
     GameOverDialog dialog(menu);
 
+
     // 设置背景图片（如果存在）
-    if (QFile(":/imgs/img/ui/inputbg.jpg").exists()) {
-        dialog.setBackgroundImage(":/imgs/img/ui/inputbg.jpg");
+    if (QFile(inputBgImgPath).exists()) {
+        dialog.setBackgroundImage(inputBgImgPath);
     }
 
     // 显示对话框并等待用户选择

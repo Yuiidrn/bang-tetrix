@@ -56,6 +56,7 @@
         <file>img/Ave_Mujica/umiri.png</file>
         <file>img/ui/inputbg.jpg</file>
         <file>img/ui/trophy.png</file>
+        <file>img/ui/inputbg2.jpg</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>sound/bandSound/Afterglow.wav</file>

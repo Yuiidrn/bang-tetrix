@@ -35,6 +35,7 @@ private:
     Mainmenu *menu;
     ScoreTable *scoreTable;
     ScoreManager *scoreManager;
+    QString inputBgImgPath;
 
     bool shouldShowGameOver; // 标记是否需要显示游戏结束界面
     bool checkIfNewRecord(int score);   // 检查是否创造了新高记录
