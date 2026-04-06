@@ -4,16 +4,12 @@
 BanG_Tetrix! 启发于BanG Dream! Girls Band Party!☆PICO ～ OHMORI ～ Episode 9.并基于QT框架开发的类俄罗斯方块游戏，
 
 ## 项目结构
-- `blockLogic.cpp`：方块逻辑处理
-- `blockMatch.cpp`：方块匹配逻辑
-- `blockMove.cpp`：方块移动逻辑
-- `game.cpp`：游戏主逻辑
 - `main.cpp`：程序入口
-- `mainmenu.cpp`：主菜单逻辑
-- `scoreTable/`：排行榜相关代码
-- `scoreinput.cpp`：分数输入逻辑
-- `scoreinputdialog.cpp`：分数输入对话框
-- `gameoverdialog.cpp`：游戏结束对话框
+- `ui/`：`game`、`mainmenu`、`gameoverdialog` 及对应 `.ui`
+- `gameplay/`：`blockLogic`、`blockMatch`、`blockMove`、`backgroundInfo.h`、`blockInfo.h`
+- `score/`：分数录入（`scoreinput*`）
+- `score/scoreTable/`：排行榜与 `ScoreManager`
+- `legacy/`：未加入 `bang-tetrix.pro` 的旧源文件（仅供参考）
 
 ## 构建过程
 

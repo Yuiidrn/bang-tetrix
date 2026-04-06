@@ -1,5 +1,5 @@
 #include "game.h"
-#include "ui_widget.h"
+#include "ui_game.h"
 #include "gameoverdialog.h"
 #include <QFile>
 

@@ -59,12 +59,15 @@ This codebase does **not** have unit tests. Manual testing via Qt Creator or com
 
 ```
 Project Root/
-├── *.cpp, *.h           # Main source files
-├── scoreTable/          # Score management subsystem
+├── main.cpp             # Application entry
+├── ui/                  # Main window, game widget, dialogs, *.ui
+├── gameplay/            # Block logic/match/move, backgroundInfo, blockInfo
+├── score/               # Score input UI; score/scoreTable/ = rankings + ScoreManager
+├── legacy/              # Sources not in bang-tetrix.pro (reference only)
 ├── img/                 # Image resources
 ├── sound/               # Audio resources
 ├── build/               # Build artifacts (do not edit)
-└── bang-tetrix.pro      # Qt project file
+└── bang-tetrix.pro      # Qt project file (INCLUDEPATH: ui, gameplay, score, score/scoreTable)
 ```
 
 ### Header Organization
@@ -80,9 +83,9 @@ Project Root/
 #include <vector>
 #include <algorithm>
 
-// 3. Project includes (use relative paths for subdirectories)
+// 3. Project includes (bang-tetrix.pro sets INCLUDEPATH for ui / gameplay / score / score/scoreTable)
 #include "backgroundInfo.h"
-#include "scoreTable/scoretable.h"
+#include "scoretable.h"
 
 // 4. Forward declarations (for circular dependency prevention)
 class GameWidget;  // NOT #include "game.h" here

@@ -7,35 +7,37 @@ CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0
+
+INCLUDEPATH += $$PWD/ui $$PWD/gameplay $$PWD/score $$PWD/score/scoreTable
 
 SOURCES += \
-    blockLogic.cpp \
-    blockMatch.cpp \
-    blockMove.cpp \
-    game.cpp \
-    gameoverdialog.cpp \
     main.cpp \
-    mainmenu.cpp \
-    scoreTable/scoremanager.cpp \
-    scoreTable/scoretable.cpp \
-    scoreinput.cpp \
-    scoreinputdialog.cpp
+    ui/game.cpp \
+    ui/mainmenu.cpp \
+    ui/gameoverdialog.cpp \
+    gameplay/blockLogic.cpp \
+    gameplay/blockMatch.cpp \
+    gameplay/blockMove.cpp \
+    score/scoreinput.cpp \
+    score/scoreinputdialog.cpp \
+    score/scoreTable/scoremanager.cpp \
+    score/scoreTable/scoretable.cpp
 
 HEADERS += \
-    backgroundInfo.h \
-    blockInfo.h \
-    game.h \
-    gameoverdialog.h \
-    mainmenu.h \
-    scoreTable/scoremanager.h \
-    scoreTable/scoretable.h \
-    scoreinput.h \
-    scoreinputdialog.h
+    gameplay/backgroundInfo.h \
+    gameplay/blockInfo.h \
+    ui/game.h \
+    ui/gameoverdialog.h \
+    ui/mainmenu.h \
+    score/scoreinput.h \
+    score/scoreinputdialog.h \
+    score/scoreTable/scoremanager.h \
+    score/scoreTable/scoretable.h
 
 FORMS += \
-    game.ui \
-    mainmenu.ui
+    ui/game.ui \
+    ui/mainmenu.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

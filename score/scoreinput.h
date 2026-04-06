@@ -1,8 +1,8 @@
 #ifndef SCOREINPUT_H
 #define SCOREINPUT_H
 
-#include "./scoreTable/scoretable.h"
-#include "./scoreTable/scoremanager.h"
+#include "scoretable.h"
+#include "scoremanager.h"
 #include "gameoverdialog.h"
 #include "scoreinputdialog.h"
 #include <QObject>

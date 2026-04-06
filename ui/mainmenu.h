@@ -1,8 +1,8 @@
 #ifndef MAINMENU_H
 #define MAINMENU_H
 
-#include "./scoreTable/scoretable.h"
-#include "./scoreTable/scoremanager.h"
+#include "scoretable.h"
+#include "scoremanager.h"
 #include <QWidget>
 #include <QScreen>
 #include <QApplication>
