@@ -27,9 +27,10 @@ struct GameScore {
     QString playerName;    // 玩家名称
     QString date;          // 游戏日期
     int score;             // 得分
-    
-    GameScore(const QString& player, const QString& gameDate, int gameScore)
-        : playerName(player), date(gameDate), score(gameScore) {}
+    int combo;             // 最大连击数
+
+    GameScore(const QString& player, const QString& gameDate, int gameScore, int gameCombo = 0)
+        : playerName(player), date(gameDate), score(gameScore), combo(gameCombo) {}
 };
 
 class ScoreTable : public QWidget
@@ -48,8 +49,8 @@ public:
     const QList<GameScore>& getPersonalHistoryData() const { return personalHistoryData; }
     const QList<GameScore>& getWorldPlayersData() const { return worldPlayersData; }
 
-    void addPersonalScore(const QString& playerName, int score);    // 添加新的个人游戏成绩
-    void addWorldPlayerScore(const QString& playerName, int score); // 添加新的世界玩家成绩
+    void addPersonalScore(const QString& playerName, int score, int combo = 0);    // 添加新的个人游戏成绩
+    void addWorldPlayerScore(const QString& playerName, int score, int combo = 0); // 添加新的世界玩家成绩
     void switchTableType(ScoreTableType type);                      // 切换排行榜类型
     ScoreTableType getCurrentType() const { return currentType; }   // 获取当前显示的排行榜类型
     void updateTableDisplay();              // 更新表格显示

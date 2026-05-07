@@ -41,11 +41,11 @@ void ScoreInput::scoreRecord(int end_score, int end_combo)
     }
 
     // 使用ScoreManager添加分数到本地
-    scoreManager->addPersonalScore(playerName, score);
-    scoreManager->addWorldPlayerScore(playerName, score);
+    scoreManager->addPersonalScore(playerName, score, combo);
+    scoreManager->addWorldPlayerScore(playerName, score, combo);
 
     // 上传分数到服务器
-    scoreManager->uploadScore(playerName, score);
+    scoreManager->uploadScore(playerName, score, combo);
 
     // 重新加载积分数据到表格
     menu->loadScoreData();

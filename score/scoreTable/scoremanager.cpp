@@ -125,13 +125,13 @@ QList<GameScore> ScoreManager::getWorldRankingScores() const
     return worldRankingScores;
 }
 
-void ScoreManager::addPersonalScore(const QString &playerName, int score)
+void ScoreManager::addPersonalScore(const QString &playerName, int score, int combo)
 {
     // 使用当前时间作为游戏日期
     QString currentDate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm");
     
     // 创建新的游戏成绩记录并添加到个人历史数据中
-    GameScore newScore(playerName, currentDate, score);
+    GameScore newScore(playerName, currentDate, score, combo);
     personalScores.append(newScore);
     
     // 按分数排序
@@ -141,7 +141,7 @@ void ScoreManager::addPersonalScore(const QString &playerName, int score)
     saveLocalScores();
 }
 
-void ScoreManager::addWorldPlayerScore(const QString &playerName, int score)
+void ScoreManager::addWorldPlayerScore(const QString &playerName, int score, int combo)
 {
     // 使用当前时间作为游戏日期
     QString currentDate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm");
@@ -153,6 +153,7 @@ void ScoreManager::addWorldPlayerScore(const QString &playerName, int score)
             // 仅当新分数更高时才更新
             if (worldRankingScores[i].score < score) {
                 worldRankingScores[i].score = score;
+                worldRankingScores[i].combo = combo;
                 worldRankingScores[i].date = currentDate;
             }
             playerExists = true;
@@ -162,7 +163,7 @@ void ScoreManager::addWorldPlayerScore(const QString &playerName, int score)
     
     // 如果玩家不存在，添加新记录
     if (!playerExists) {
-        GameScore newScore(playerName, currentDate, score);
+        GameScore newScore(playerName, currentDate, score, combo);
         worldRankingScores.append(newScore);
     }
     
@@ -190,6 +191,7 @@ QJsonArray ScoreManager::scoresToJson(const QList<GameScore> &scores)
         scoreObj["playerName"] = score.playerName;
         scoreObj["date"] = score.date;
         scoreObj["score"] = score.score;
+        scoreObj["combo"] = score.combo;
         
         jsonArray.append(scoreObj);
     }
@@ -210,8 +212,9 @@ QList<GameScore> ScoreManager::scoresFromJson(const QJsonArray &jsonArray)
         QString playerName = obj["playerName"].toString();
         QString date = obj["date"].toString();
         int score = obj["score"].toInt();
+        int combo = obj["combo"].toInt(0); // 默认0，兼容旧数据
         
-        scores.append(GameScore(playerName, date, score));
+        scores.append(GameScore(playerName, date, score, combo));
     }
     
     return scores;
@@ -265,7 +268,7 @@ void ScoreManager::fetchWorldRankings()
 }
 
 //  上传单个分数
-void ScoreManager::uploadScore(const QString &playerName, int score)
+void ScoreManager::uploadScore(const QString &playerName, int score, int combo)
 {
     if (serverUrl.isEmpty()) {
         emit networkError("服务器URL未设置");
@@ -279,6 +282,7 @@ void ScoreManager::uploadScore(const QString &playerName, int score)
     QJsonObject scoreObj;
     scoreObj["playerName"] = playerName;
     scoreObj["score"] = score;
+    scoreObj["combo"] = combo;
     scoreObj["clientId"] = clientId;
     scoreObj["date"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm");
     

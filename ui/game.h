@@ -53,6 +53,7 @@ public:
     void StartGame(); //开始游戏
     void GameOver();  //游戏结束
     void goToMainMenu();    //界面切换
+    void setFixedSpawnEnabled(bool enabled);  //设置固定出场序列（录制视频用）
 
     /*物块逻辑*/
     void ResetBlock(); //重置人物块（准确来说是进行交替？）
@@ -126,6 +127,10 @@ private:
     int currentIndex;           // 当前显示的图片索引
     QTimer *Mtimer;             // 定时器用于切换图片
     
+    // 固定出场序列（录制视频用）
+    bool fixedSpawnEnabled;
+    int fixedSpawnIdx;
+
     // 游戏状态标志
     bool isGameOver;
 

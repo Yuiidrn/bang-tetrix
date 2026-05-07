@@ -188,13 +188,13 @@ void ScoreTable::setWorldPlayersData(const QList<GameScore>& data)
     }
 }
 
-void ScoreTable::addPersonalScore(const QString& playerName, int score)
+void ScoreTable::addPersonalScore(const QString& playerName, int score, int combo)
 {
     // 使用当前时间作为游戏日期
     QString currentDate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm");
     
     // 创建新的游戏成绩记录并添加到个人历史数据中
-    GameScore newScore(playerName, currentDate, score);
+    GameScore newScore(playerName, currentDate, score, combo);
     personalHistoryData.append(newScore);
     
     // 按分数排序
@@ -206,7 +206,7 @@ void ScoreTable::addPersonalScore(const QString& playerName, int score)
     }
 }
 
-void ScoreTable::addWorldPlayerScore(const QString& playerName, int score)
+void ScoreTable::addWorldPlayerScore(const QString& playerName, int score, int combo)
 {
     // 使用当前时间作为游戏日期
     QString currentDate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm");
@@ -218,6 +218,7 @@ void ScoreTable::addWorldPlayerScore(const QString& playerName, int score)
             // 仅当新分数更高时才更新
             if (worldPlayersData[i].score < score) {
                 worldPlayersData[i].score = score;
+                worldPlayersData[i].combo = combo;
                 worldPlayersData[i].date = currentDate;
             }
             playerExists = true;
@@ -227,7 +228,7 @@ void ScoreTable::addWorldPlayerScore(const QString& playerName, int score)
     
     // 如果玩家不存在，添加新记录
     if (!playerExists) {
-        GameScore newScore(playerName, currentDate, score);
+        GameScore newScore(playerName, currentDate, score, combo);
         worldPlayersData.append(newScore);
     }
     
@@ -313,13 +314,13 @@ void ScoreTable::updateTableDisplay()
         (currentType == PERSONAL_HISTORY) ? personalHistoryData : worldPlayersData;
     
     if (currentType == PERSONAL_HISTORY) {
-        // 个人历史记录显示四列：排名、用户名、游戏日期、得分
-        tableWidget->setColumnCount(4);
-        tableWidget->setHorizontalHeaderLabels({"排名", "用户名", "游戏日期", "得分"});
+        // 个人历史记录显示五列：排名、用户名、游戏日期、得分、连击数
+        tableWidget->setColumnCount(5);
+        tableWidget->setHorizontalHeaderLabels({"排名", "用户名", "游戏日期", "得分", "连击数"});
     } else {
-        // 世界玩家排名显示三列：排名、玩家名称、得分
-        tableWidget->setColumnCount(3);
-        tableWidget->setHorizontalHeaderLabels({"排名", "玩家名称", "得分"});
+        // 世界玩家排名显示四列：排名、玩家名称、得分、连击数
+        tableWidget->setColumnCount(4);
+        tableWidget->setHorizontalHeaderLabels({"排名", "玩家名称", "得分", "连击数"});
     }
 
     if (data.size() == 0) {
@@ -356,6 +357,10 @@ void ScoreTable::updateTableDisplay()
 
             scoreItem->setFont(QFont("微软雅黑", 10, QFont::Bold));
 
+            // 连击数
+            QTableWidgetItem *comboItem = new QTableWidgetItem(QString::number(data[i].combo));
+            comboItem->setTextAlignment(Qt::AlignCenter);
+
             // 设置前三名的特殊样式
             if (i < 3) {
                 QString backgroundColor, textColor;
@@ -391,6 +396,7 @@ void ScoreTable::updateTableDisplay()
                 nameItem->setBackground(QColor(backgroundColor));
                 scoreItem->setBackground(QColor(backgroundColor));
                 scoreItem->setForeground(QColor(textColor));
+                comboItem->setBackground(QColor(backgroundColor));
 
                 if (dateItem) {
                     dateItem->setBackground(QColor(backgroundColor));
@@ -403,8 +409,10 @@ void ScoreTable::updateTableDisplay()
             if (currentType == PERSONAL_HISTORY) {
                 tableWidget->setItem(i, 2, dateItem);
                 tableWidget->setItem(i, 3, scoreItem);
+                tableWidget->setItem(i, 4, comboItem);
             } else {
                 tableWidget->setItem(i, 2, scoreItem);
+                tableWidget->setItem(i, 3, comboItem);
             }
         }
     }

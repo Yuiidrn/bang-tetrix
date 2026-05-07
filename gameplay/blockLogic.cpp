@@ -7,6 +7,42 @@ void GameWidget::CreateBlock(Block_info &head_block)    //对next_block的引用
 {
     head_block = Block_info();   //使用默认构造函数 创建实例
 
+    // 固定出场序列（录制视频用，默认关闭）：依次为 saki -> soyorin -> mutsumi -> uika
+    // 映射为 (band_id, char_id):  (8,0) (7,1) (8,1) (8,4)
+    if (fixedSpawnEnabled && fixedSpawnIdx < 4) {
+        const int fixedSeq[4][2] = {{8, 0}, {7, 1}, {8, 1}, {8, 4}};
+        int rBand_id = fixedSeq[fixedSpawnIdx][0];
+        int rChar_id = fixedSeq[fixedSpawnIdx][1];
+
+        if (charRest[rBand_id].contains(rChar_id)) {
+            fixedSpawnIdx++;
+
+            charRest[rBand_id].remove(rChar_id);
+            if (charRest[rBand_id].empty())
+                bandRest.remove(rBand_id);
+
+            QString ImgPath = ":/imgs/img/";
+            ImgPath += bandList[rBand_id] + "/" + nameList[rBand_id][rChar_id] + ".png";
+            QString rbandSoundPath = "qrc:/sounds/sound/bandSound/" + bandList[rBand_id] + ".wav";
+
+            head_block.belong = Band_name(rBand_id);
+            head_block.char_name = nameList[rBand_id][rChar_id];
+            head_block.bandSoundPath = rbandSoundPath;
+            head_block.img = QPixmap(ImgPath);
+
+            // 初始位置和朝向
+            int rPos_x = 4, rDir = 2;
+            head_block.y = fallingHeight;
+            head_block.bp.pos_x = rPos_x;
+            head_block.bp.pos_y = qFloor(head_block.y / BLOCK_SIZE * 1.0);
+            head_block.is_head = 1;
+            head_block.dir = rDir;
+            return;
+        } else {
+            fixedSpawnIdx++;
+        }
+    }
+
     QString ImgPath = ":/imgs/img/", rbandSoundPath = "qrc:/sounds/sound/";
     int sum = 0;
     for(int i = 0; i < BAND_NUM/*SET_NUM*/; i++)

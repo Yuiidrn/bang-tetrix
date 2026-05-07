@@ -29,12 +29,12 @@ public:
     bool saveLocalScores();                                 // 保存积分数据到本地
     QList<GameScore> getPersonalHistoryScores() const;          // 获取个人历史记录
     QList<GameScore> getWorldRankingScores() const;             // 获取世界排名记录
-    void addPersonalScore(const QString &playerName, int score);    // 添加新的个人历史记录
-    void addWorldPlayerScore(const QString &playerName, int score); // 添加/更新世界玩家记录
+    void addPersonalScore(const QString &playerName, int score, int combo = 0);    // 添加新的个人历史记录
+    void addWorldPlayerScore(const QString &playerName, int score, int combo = 0); // 添加/更新世界玩家记录
     
     void syncWithServer();                  // 同步本地数据到服务器
     void fetchWorldRankings();              // 从服务器获取世界排名数据
-    void uploadScore(const QString &playerName, int score);  // 上传单个分数到服务器
+    void uploadScore(const QString &playerName, int score, int combo = 0);  // 上传单个分数到服务器
     void batchUploadScores();               // 批量上传所有未同步的分数记录
 
     void setServerUrl(const QString &url);  // 设置服务器URL

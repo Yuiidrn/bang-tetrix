@@ -144,6 +144,8 @@ void GameWidget::InitGame()
     //分数清0
     score=0;
     MaxCombo=0;
+    fixedSpawnEnabled=false; //固定出场序列默认关闭
+    fixedSpawnIdx=0;
     //开始游戏
     StartGame();
     landEffect->play();
@@ -151,6 +153,9 @@ void GameWidget::InitGame()
 
 void GameWidget::StartGame()
 {
+    // 固定出场顺序（录制用）
+    setFixedSpawnEnabled(true);
+
     // 重置游戏结束标志
     isGameOver = false;
 
@@ -164,6 +169,12 @@ void GameWidget::StartGame()
     gameTimer->start();
     refreshTimer->start();
 }
+void GameWidget::setFixedSpawnEnabled(bool enabled)
+{
+    fixedSpawnEnabled = enabled;
+    fixedSpawnIdx = 0;
+}
+
 void GameWidget::GameOver()
 {
     gameTimer->stop();
