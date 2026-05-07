@@ -154,7 +154,7 @@ void GameWidget::InitGame()
 void GameWidget::StartGame()
 {
     // 固定出场顺序（录制用）
-    setFixedSpawnEnabled(true);
+    // setFixedSpawnEnabled(true);
 
     // 重置游戏结束标志
     isGameOver = false;

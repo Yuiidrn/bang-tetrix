@@ -85,12 +85,18 @@ ScoreTable::ScoreTable(QWidget *parent)
     mainLayout->addLayout(switchLayout);
     
     // 创建表格
-    tableWidget = new QTableWidget(0, 4, this);
-    tableWidget->setHorizontalHeaderLabels({"排名", "用户名", "游戏日期", "得分"});
+    tableWidget = new QTableWidget(0, 5, this);
+    tableWidget->setHorizontalHeaderLabels({"排名", "用户名", "游戏日期", "得分", "连击数"});
     tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableWidget->setAlternatingRowColors(true);
-    tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    tableWidget->horizontalHeader()->setStretchLastSection(false);
+    tableWidget->setColumnWidth(0, 113);   // 排名
+    tableWidget->setColumnWidth(1, 140);  // 名称
+    tableWidget->setColumnWidth(2, 130);  // 日期
+    tableWidget->setColumnWidth(3, 90);   // 得分
+    tableWidget->setColumnWidth(4, 81);   // 连击数
     tableWidget->verticalHeader()->setVisible(false);
     tableWidget->setShowGrid(true);
     tableWidget->setStyleSheet(
@@ -313,14 +319,12 @@ void ScoreTable::updateTableDisplay()
     const QList<GameScore>& data = 
         (currentType == PERSONAL_HISTORY) ? personalHistoryData : worldPlayersData;
     
+    // 统一显示五列：排名、名称、游戏日期、得分、连击数
+    tableWidget->setColumnCount(5);
     if (currentType == PERSONAL_HISTORY) {
-        // 个人历史记录显示五列：排名、用户名、游戏日期、得分、连击数
-        tableWidget->setColumnCount(5);
         tableWidget->setHorizontalHeaderLabels({"排名", "用户名", "游戏日期", "得分", "连击数"});
     } else {
-        // 世界玩家排名显示四列：排名、玩家名称、得分、连击数
-        tableWidget->setColumnCount(4);
-        tableWidget->setHorizontalHeaderLabels({"排名", "玩家名称", "得分", "连击数"});
+        tableWidget->setHorizontalHeaderLabels({"排名", "玩家名称", "游戏日期", "得分", "连击数"});
     }
 
     if (data.size() == 0) {
@@ -344,12 +348,9 @@ void ScoreTable::updateTableDisplay()
             QTableWidgetItem *nameItem = new QTableWidgetItem(data[i].playerName);
             nameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
-            // 日期 (仅个人历史记录显示)
-            QTableWidgetItem *dateItem = nullptr;
-            if (currentType == PERSONAL_HISTORY) {
-                dateItem = new QTableWidgetItem(data[i].date);
-                dateItem->setTextAlignment(Qt::AlignCenter);
-            }
+            // 游戏日期
+            QTableWidgetItem *dateItem = new QTableWidgetItem(data[i].date);
+            dateItem->setTextAlignment(Qt::AlignCenter);
 
             // 分数
             QTableWidgetItem *scoreItem = new QTableWidgetItem(QString::number(data[i].score));
@@ -360,6 +361,7 @@ void ScoreTable::updateTableDisplay()
             // 连击数
             QTableWidgetItem *comboItem = new QTableWidgetItem(QString::number(data[i].combo));
             comboItem->setTextAlignment(Qt::AlignCenter);
+            comboItem->setFont(QFont("微软雅黑", 10, QFont::Bold));
 
             // 设置前三名的特殊样式
             if (i < 3) {
@@ -373,6 +375,7 @@ void ScoreTable::updateTableDisplay()
                     rankSymbol = "🏆 ";
                     rankItem->setFont(QFont("微软雅黑", 11, QFont::Bold));
                     scoreItem->setFont(QFont("微软雅黑", 11, QFont::Bold));
+                    comboItem->setFont(QFont("微软雅黑", 11, QFont::Bold));
                 } else if (i == 1) {
                     // 第二名 - 银色风格
                     backgroundColor = "#F5F5F5";
@@ -394,26 +397,18 @@ void ScoreTable::updateTableDisplay()
                 // 设置整行背景颜色
                 rankItem->setBackground(QColor(backgroundColor));
                 nameItem->setBackground(QColor(backgroundColor));
+                dateItem->setBackground(QColor(backgroundColor));
                 scoreItem->setBackground(QColor(backgroundColor));
                 scoreItem->setForeground(QColor(textColor));
                 comboItem->setBackground(QColor(backgroundColor));
-
-                if (dateItem) {
-                    dateItem->setBackground(QColor(backgroundColor));
-                }
+                comboItem->setForeground(QColor(textColor));
             }
 
             tableWidget->setItem(i, 0, rankItem);
             tableWidget->setItem(i, 1, nameItem);
-
-            if (currentType == PERSONAL_HISTORY) {
-                tableWidget->setItem(i, 2, dateItem);
-                tableWidget->setItem(i, 3, scoreItem);
-                tableWidget->setItem(i, 4, comboItem);
-            } else {
-                tableWidget->setItem(i, 2, scoreItem);
-                tableWidget->setItem(i, 3, comboItem);
-            }
+            tableWidget->setItem(i, 2, dateItem);
+            tableWidget->setItem(i, 3, scoreItem);
+            tableWidget->setItem(i, 4, comboItem);
         }
     }
 
