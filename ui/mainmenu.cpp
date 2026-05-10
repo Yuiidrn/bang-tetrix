@@ -40,7 +40,7 @@ Mainmenu::Mainmenu(QWidget *parent) :
     connect(scoreManager, &ScoreManager::syncCompleted, this, &Mainmenu::onSyncCompleted);
 
     //--设置数据库服务器URL---（需要自行搭数据库和部署后端）//www.yourScoreUrl/
-    scoreManager->setServerUrl("http://8.134.182.165:3000/api/scores");
+    scoreManager->setServerUrl("http://www.yourScoreUrl/");
     scoreManager->syncWithServer();      // 尝试与服务器同步
 
     // 创建排行榜但不显示
