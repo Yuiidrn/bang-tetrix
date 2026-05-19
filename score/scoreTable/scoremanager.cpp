@@ -17,7 +17,6 @@ ScoreManager::ScoreManager(QObject *parent)
     //(需要自行配置服务器搭键数据库并部署后端，这是实现世界排名所需要的后端功能，不设置也不影响游戏的运行)
     // 设置默认服务器URL(同时修改在mainmenu.cpp中构造函数里的相应的set函数参数)
     serverUrl = "-1";
-    
     // 加载或生成客户端ID
     loadClientId();
 }
@@ -258,6 +257,7 @@ void ScoreManager::fetchWorldRankings()
     QUrl url(serverUrl + "/world");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setTransferTimeout(15000);
     
     QNetworkReply *reply = networkManager->get(request);
     
@@ -278,7 +278,8 @@ void ScoreManager::uploadScore(const QString &playerName, int score, int combo)
     QUrl url(serverUrl);
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    
+    request.setTransferTimeout(15000);
+
     QJsonObject scoreObj;
     scoreObj["playerName"] = playerName;
     scoreObj["score"] = score;
@@ -308,7 +309,8 @@ void ScoreManager::batchUploadScores()
     QUrl url(serverUrl + "/batch");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    
+    request.setTransferTimeout(15000);
+
     QJsonObject uploadObj;
     uploadObj["clientId"] = clientId;
     uploadObj["scores"] = scoresToJson(personalScores);
@@ -455,6 +457,7 @@ void ScoreManager::checkServerConnection()
 {
     QNetworkRequest request(QUrl(serverUrl + "/status"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setTransferTimeout(15000);
 
     QNetworkReply *reply = networkManager->get(request);
 
