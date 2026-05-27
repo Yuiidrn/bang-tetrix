@@ -1,0 +1,78 @@
+name: Build macOS Release
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: macOS Qt6 Build
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Qt 6
+        run: brew install qt@6
+
+      - name: Add Qt to PATH
+        run: echo "$(brew --prefix qt@6)/bin" >> $GITHUB_PATH
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Generate App Icon
+        run: |
+          mkdir -p img/ui
+          ICONSET="img/ui/bt.iconset"
+
+          if [ ! -f img/ui/bt.icns ]; then
+            echo "Generating app icon from .ico fallback..."
+            mkdir -p "$ICONSET"
+
+            # Create a 1x1 px PNG as base, then resize (sips needs valid input)
+            printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82' > icon_build/base.png
+
+            for size in 16 32 64 128 256 512; do
+              sips -z $size $size icon_build/base.png --out "$ICONSET/icon_${size}x${size}.png" &>/dev/null
+              sips -z $((size*2)) $((size*2)) icon_build/base.png --out "$ICONSET/icon_${size}x${size}@2x.png" &>/dev/null
+            done
+
+            iconutil -c icns "$ICONSET" -o img/ui/bt.icns
+            rm -rf icon_build "$ICONSET"
+            echo "Icon generated: img/ui/bt.icns"
+          else
+            echo "Icon already exists, skipping generation."
+          fi
+
+      - name: Configure
+        run: |
+          qmake bang-tetrix.pro -spec macx-clang CONFIG+=release
+
+      - name: Build
+        run: make -j$(sysctl -n hw.logicalcpu)
+
+      - name: Package
+        run: |
+          macdeployqt bang-tetrix.app -dmg -verbose=2
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bang-Tetrix-macOS
+          path: bang-tetrix.dmg
+          retention-days: 30
+
+      - name: GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: bang-tetrix.dmg
+          generate_release_notes: true
